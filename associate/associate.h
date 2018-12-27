@@ -11,7 +11,9 @@ class Associate
   public:
     void SendAssociate();
     void ReceiveAssociate();
+  private:
     void InitAssociationRQPDU(AssociateRQPDU *associateRQPDU);
+  
 };
 
 

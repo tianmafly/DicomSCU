@@ -1,48 +1,50 @@
 #include <vector>
+#include <stdint.h>
+#include <string>
 using namespace std;
 
 struct PduHead
 {
     char PduType;
     char Reserved;
-    char PduLen[4];
+    uint32_t PduLen;
 };
 
 struct ItemHead
 {
-    char ItemType[1];
-    char Reserved[1];
-    char ItemLen[2];
+    char ItemType;
+    char Reserved;
+    uint16_t  ItemLen;
 };
 
 struct SyntaxItem
 {
     ItemHead itemHead;
-    char Syntax[64];
+    string Syntax;
 };
 
 struct NegotiationSyntaxItem
 {
     SyntaxItem abstractSyntax;
-    vector<SyntaxItem> transferSyntax;
+    vector<SyntaxItem> transferSyntaxlist;
 };
 
 struct MaximumLengthItem
 {
     ItemHead itemHead;
-    char MaxLenReceived[4];
+    uint32_t MaxLenReceived;
 };
 
 struct ApplicationContexItem
 {
     ItemHead itemHead;
-    char AppicationContextName[64];
+    string AppicationContextName;
 };
 
 struct PresentationContextItem
 {
     ItemHead itemHead;
-    char PresentationContextID[2];
+    uint16_t PresentationContextID;
     char Reserved[3];
     vector<NegotiationSyntaxItem> negotiationSyntaxItem;
 };
