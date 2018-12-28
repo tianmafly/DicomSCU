@@ -1,3 +1,7 @@
+#ifndef ASSOCIATERQPDU_H
+#define ASSOCIATERQPDU_H
+
+
 #include <vector>
 #include <stdint.h>
 #include <string>
@@ -14,7 +18,7 @@ struct ItemHead
 {
     char ItemType;
     char Reserved;
-    uint16_t  ItemLen;
+    uint16_t ItemLen;
 };
 
 struct SyntaxItem
@@ -63,8 +67,8 @@ struct AssociateRQPDU
 {
     PduHead pduHead;
 
-    char ProtocolVersion[2];
-    char Reserved1[2];
+    uint16_t ProtocolVersion;
+    uint16_t Reserved1;
     char CalledAE[16];
     char CallingAE[16];
     char Reserved2[32];
@@ -73,3 +77,5 @@ struct AssociateRQPDU
     PresentationContextItem presentationContextItem;
     UserInfoItem userInfoItem;
 };
+
+#endif

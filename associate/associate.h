@@ -1,4 +1,19 @@
+#ifndef ASSOCIATE_H
+#define ASSOCIATE_H
+
 #include "../pdu/associaterqpdu.h"
+#include <string>
+using namespace std;
+
+
+struct AssociateParas
+{
+  string CallingAE;
+  string CalledAE;
+  string SCPIP;
+  int SCPPort;
+};
+
 
 class Associate
 {
@@ -9,11 +24,11 @@ class Associate
     ~Associate();
 
   public:
-    void SendAssociate();
-    void ReceiveAssociate();
+    void SendAssociateRQ(AssociateRQPDU *associateRQPDU, AssociateParas associateParas);
+    void ReceiveAssociateAC();
   private:
-    void InitAssociationRQPDU(AssociateRQPDU *associateRQPDU);
+    
   
 };
 
-
+#endif

@@ -5,19 +5,26 @@ using namespace std;
 
 class AssociateRQ
 {
-private:
-    /* data */
 public:
-    AssociateRQ(/* args */);
+    AssociateRQ(AssociateRQPDU *associaterqpdu, string callingae, string calledae);
     ~AssociateRQ();
 public:
-    void InitAssociateRQPDU(AssociateRQPDU *associateRQPDU);
+    void SendAssociateRQ(string ip, int port);
+    
+private:
+    void InitDefaultAssociateRQPDU(AssociateRQPDU *associaterqpdu);
+    void InitAssociateRQPDU(AssociateRQPDU *associaterqpdu, string callingae, string calledae);
     ApplicationContexItem InitApplicationContextItem();
     PresentationContextItem InitPresentationContextItem();
-    UserInfoItem InitUserInfoItem();
-private:
+    UserInfoItem InitUserInfoItem(uint32_t maximumLength);
+
     SyntaxItem InitAbstractSyntax(string abstractSyntax);
     SyntaxItem InitTransferSyntax(string transferSyntax);
+    MaximumLengthItem InitMaximumLength(uint32_t maximumlength);
+
+private:
+    int itemheadlength;
+    AssociateRQPDU *associateRQPDU;
 };
 
 

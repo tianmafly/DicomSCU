@@ -1,3 +1,6 @@
+#ifndef UID_H
+#define UID_H
+
 #include <string>
 using namespace std;
 
@@ -17,3 +20,5 @@ const string StudyRoot_QueryRetrieveInformationModel_GET = "1.2.840.10008.5.1.4.
 const string  ImplicitVRLittleEndian = "1.2.840.10008.1.2";
 const string  ExplicitVRLittleEndian = "1.2.840.10008.1.2.1";
 const string  ExplicitVRBigEndian = "1.2.840.10008.1.2.2";
+
+#endif

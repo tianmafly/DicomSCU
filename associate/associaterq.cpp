@@ -1,19 +1,56 @@
 #include "associaterq.h"
 #include <string.h>
 #include "../type/uid.h"
+#include "../dul/dul.h"
 
-
-AssociateRQ::AssociateRQ(/* args */)
+AssociateRQ::AssociateRQ(AssociateRQPDU *associaterqpdu, string callingae, string calledae)
 {
+    //char ItemType; char Reserved; uint16_t ItemLen;
+    itemheadlength = 1 + 1 + 2;
+    InitAssociateRQPDU(associaterqpdu, callingae, calledae);
+    associateRQPDU = associaterqpdu;
 }
 
 AssociateRQ::~AssociateRQ()
 {
 }
 
-void AssociateRQ::InitAssociateRQPDU(AssociateRQPDU *associateRQPDU)
+void AssociateRQ::SendAssociateRQ(string ip, int port)
 {
+    AssociateRQDUL associateRQDUL(ip, port);
+    associateRQDUL.DUL_sendAssociateRQ(associateRQPDU);
+}
 
+void AssociateRQ::InitAssociateRQPDU(AssociateRQPDU *associaterqpdu, string callingae, string calledae)
+{
+    InitDefaultAssociateRQPDU(associaterqpdu);
+
+    memset(associaterqpdu->CallingAE, 0, sizeof(associaterqpdu->CallingAE));
+    memcpy(associaterqpdu->CallingAE, callingae.c_str(), callingae.size());
+    memset(associaterqpdu->CalledAE, 0, sizeof(associaterqpdu->CalledAE));
+    memcpy(associaterqpdu->CalledAE, calledae.c_str(), calledae.size());
+}
+
+void AssociateRQ::InitDefaultAssociateRQPDU(AssociateRQPDU *associaterqpdu)
+{
+    //init PUD Head
+    associaterqpdu->pduHead.PduType = 0x01;
+    associaterqpdu->pduHead.Reserved = 0x00;
+    
+    //两字节,只能用bit 0表示
+    associaterqpdu->ProtocolVersion = 0x01;
+    associaterqpdu->Reserved1 = 0x00;
+    memset(associaterqpdu->Reserved2, 0x00, sizeof(associaterqpdu->Reserved2));
+
+    associaterqpdu->applicationContexItem = InitApplicationContextItem();
+    associaterqpdu->presentationContextItem = InitPresentationContextItem();
+    associaterqpdu->userInfoItem = InitUserInfoItem(65535);
+
+    uint16_t applicationcontexitemlen = associaterqpdu->applicationContexItem.itemHead.ItemLen + itemheadlength;
+    uint16_t presentationcontextitemlen = associaterqpdu->presentationContextItem.itemHead.ItemLen + itemheadlength;
+    uint16_t userinfoitemlen = associaterqpdu->userInfoItem.itemHead.ItemLen + itemheadlength;
+
+    associaterqpdu->pduHead.PduLen = 2 + 2 + 16 + 16 + applicationcontexitemlen + presentationcontextitemlen + userinfoitemlen;
 }
 
 ApplicationContexItem AssociateRQ::InitApplicationContextItem()
@@ -49,23 +86,30 @@ PresentationContextItem AssociateRQ::InitPresentationContextItem()
     int length = 0;
     for(int i = 0;i < presentationcontextitem.negotiationSyntaxItem.size();i++)
     {
-        int abstractsyntaxlen = presentationcontextitem.negotiationSyntaxItem[i].abstractSyntax.itemHead.ItemLen + 1 + 1 + 2;
-        length += abstractsyntaxlen;
+        int abstractsyntaxitemlen = presentationcontextitem.negotiationSyntaxItem[i].abstractSyntax.itemHead.ItemLen + itemheadlength;
+        length += abstractsyntaxitemlen;
 
         for(int j = 0;j < length;j++)
         {
-            int  transfersyntaxlen = presentationcontextitem.negotiationSyntaxItem[i].transferSyntaxlist[j].itemHead.ItemLen + 1 + 1 + 2;
-            length += transfersyntaxlen;
+            int  transfersyntaxitemlen = presentationcontextitem.negotiationSyntaxItem[i].transferSyntaxlist[j].itemHead.ItemLen + itemheadlength;
+            length += transfersyntaxitemlen;
         }
-        
     }
 
     presentationcontextitem.itemHead.ItemLen = length;
 }
 
-UserInfoItem AssociateRQ::InitUserInfoItem()
+UserInfoItem AssociateRQ::InitUserInfoItem(uint32_t maximumLength)
 {
+    UserInfoItem userinfoitem;
 
+    userinfoitem.itemHead.ItemType = 0x50;
+    userinfoitem.itemHead.Reserved = 0x00;
+
+    userinfoitem.maxLenItem = InitMaximumLength(maximumLength);
+    int maxlenitemlen = userinfoitem.maxLenItem.itemHead.ItemLen + itemheadlength;
+
+    userinfoitem.itemHead.ItemLen = maxlenitemlen + itemheadlength;
 }
 
 SyntaxItem AssociateRQ::InitAbstractSyntax(string abstractSyntax)
@@ -89,4 +133,14 @@ SyntaxItem AssociateRQ::InitTransferSyntax(string transferSyntax)
     transfersyntax.itemHead.ItemLen = transfersyntax.Syntax.size();
 
     return transfersyntax;
+}
+
+MaximumLengthItem AssociateRQ::InitMaximumLength(uint32_t maximumLength)
+{
+    MaximumLengthItem maximumlength;
+    maximumlength.itemHead.ItemType = 0x51;
+    maximumlength.itemHead.Reserved = 0x00;
+    maximumlength.itemHead.ItemLen = 4;
+
+    maximumlength.MaxLenReceived = maximumLength;
 }
