@@ -6,9 +6,10 @@
 AssociateRQ::AssociateRQ(AssociateRQPDU *associaterqpdu, string callingae, string calledae)
 {
     //char ItemType; char Reserved; uint16_t ItemLen;
-    itemheadlength = 1 + 1 + 2;
+    this->itemheadlength = sizeof(ItemHead::ItemType) + sizeof(ItemHead::Reserved) + sizeof(ItemHead::ItemLen);
+
     InitAssociateRQPDU(associaterqpdu, callingae, calledae);
-    associateRQPDU = associaterqpdu;
+    this->associateRQPDU = associaterqpdu;
 }
 
 AssociateRQ::~AssociateRQ()
@@ -18,16 +19,17 @@ AssociateRQ::~AssociateRQ()
 void AssociateRQ::SendAssociateRQ(string ip, int port)
 {
     AssociateRQDUL associateRQDUL(ip, port);
-    associateRQDUL.DUL_sendAssociateRQ(associateRQPDU);
+    associateRQDUL.DUL_sendAssociateRQ(this->associateRQPDU);
 }
 
 void AssociateRQ::InitAssociateRQPDU(AssociateRQPDU *associaterqpdu, string callingae, string calledae)
 {
     InitDefaultAssociateRQPDU(associaterqpdu);
 
-    memset(associaterqpdu->CallingAE, 0, sizeof(associaterqpdu->CallingAE));
+    //leading and trailing spaces (20H) being non-significant(part 8, 9.3.2)
+    memset(associaterqpdu->CallingAE, 0x20, sizeof(associaterqpdu->CallingAE));
     memcpy(associaterqpdu->CallingAE, callingae.c_str(), callingae.size());
-    memset(associaterqpdu->CalledAE, 0, sizeof(associaterqpdu->CalledAE));
+    memset(associaterqpdu->CalledAE, 0x20, sizeof(associaterqpdu->CalledAE));
     memcpy(associaterqpdu->CalledAE, calledae.c_str(), calledae.size());
 }
 
@@ -40,7 +42,9 @@ void AssociateRQ::InitDefaultAssociateRQPDU(AssociateRQPDU *associaterqpdu)
     //两字节,只能用bit 0表示
     associaterqpdu->ProtocolVersion = 0x01;
     associaterqpdu->Reserved1 = 0x00;
-    memset(associaterqpdu->Reserved2, 0x00, sizeof(associaterqpdu->Reserved2));
+    memset(associaterqpdu->CalledAE,0, sizeof(associaterqpdu->CalledAE));
+    memset(associaterqpdu->CallingAE,0, sizeof(associaterqpdu->CallingAE));
+    memset(associaterqpdu->Reserved2, 0, sizeof(associaterqpdu->Reserved2));
 
     associaterqpdu->applicationContexItem = InitApplicationContextItem();
     associaterqpdu->presentationContextItem = InitPresentationContextItem();
@@ -50,7 +54,14 @@ void AssociateRQ::InitDefaultAssociateRQPDU(AssociateRQPDU *associaterqpdu)
     uint16_t presentationcontextitemlen = associaterqpdu->presentationContextItem.itemHead.ItemLen + itemheadlength;
     uint16_t userinfoitemlen = associaterqpdu->userInfoItem.itemHead.ItemLen + itemheadlength;
 
-    associaterqpdu->pduHead.PduLen = 2 + 2 + 16 + 16 + applicationcontexitemlen + presentationcontextitemlen + userinfoitemlen;
+    associaterqpdu->pduHead.PduLen =  sizeof(associaterqpdu->ProtocolVersion) + 
+                                      sizeof(associaterqpdu->Reserved1) + 
+                                      sizeof(associaterqpdu->CalledAE) + 
+                                      sizeof(associaterqpdu->CallingAE) + 
+                                      sizeof(associaterqpdu->Reserved2) + 
+                                      applicationcontexitemlen + 
+                                      presentationcontextitemlen + 
+                                      userinfoitemlen;
 }
 
 ApplicationContexItem AssociateRQ::InitApplicationContextItem()
@@ -83,13 +94,13 @@ PresentationContextItem AssociateRQ::InitPresentationContextItem()
     negotiationsyntaxitem.transferSyntaxlist.push_back(InitTransferSyntax(ImplicitVRLittleEndian));
     presentationcontextitem.negotiationSyntaxItem.push_back(negotiationsyntaxitem);
 
-    int length = 0;
+    int length = sizeof(presentationcontextitem.PresentationContextID) + sizeof(presentationcontextitem.Reserved);
     for(int i = 0;i < presentationcontextitem.negotiationSyntaxItem.size();i++)
     {
         int abstractsyntaxitemlen = presentationcontextitem.negotiationSyntaxItem[i].abstractSyntax.itemHead.ItemLen + itemheadlength;
         length += abstractsyntaxitemlen;
 
-        for(int j = 0;j < length;j++)
+        for(int j = 0;j < presentationcontextitem.negotiationSyntaxItem[i].transferSyntaxlist.size();j++)
         {
             int  transfersyntaxitemlen = presentationcontextitem.negotiationSyntaxItem[i].transferSyntaxlist[j].itemHead.ItemLen + itemheadlength;
             length += transfersyntaxitemlen;
@@ -97,6 +108,8 @@ PresentationContextItem AssociateRQ::InitPresentationContextItem()
     }
 
     presentationcontextitem.itemHead.ItemLen = length;
+
+    return presentationcontextitem;
 }
 
 UserInfoItem AssociateRQ::InitUserInfoItem(uint32_t maximumLength)
@@ -110,6 +123,8 @@ UserInfoItem AssociateRQ::InitUserInfoItem(uint32_t maximumLength)
     int maxlenitemlen = userinfoitem.maxLenItem.itemHead.ItemLen + itemheadlength;
 
     userinfoitem.itemHead.ItemLen = maxlenitemlen + itemheadlength;
+
+    return userinfoitem;
 }
 
 SyntaxItem AssociateRQ::InitAbstractSyntax(string abstractSyntax)
@@ -143,4 +158,6 @@ MaximumLengthItem AssociateRQ::InitMaximumLength(uint32_t maximumLength)
     maximumlength.itemHead.ItemLen = 4;
 
     maximumlength.MaxLenReceived = maximumLength;
+
+    return maximumlength;
 }

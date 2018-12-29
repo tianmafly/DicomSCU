@@ -4,7 +4,11 @@
 #include "../socket/socket.h"
 #include "../pdu/associaterqpdu.h"
 
-
+struct Data
+{
+  char* buffer;
+  int len;
+};
 
 class AssociateRQDUL
 {
@@ -16,7 +20,7 @@ public:
   void DUL_sendAssociateRQ(AssociateRQPDU *associaterqpdu);
   void DUL_ReceiveAssociateAC();
 private:
-  char * DUL_GetAssociateRQPUDMemory(AssociateRQPDU *associaterqpdu);
+  Data DUL_GetAssociateRQPUDMemory(AssociateRQPDU *associaterqpdu);
   void DUL_GetApplicationContexItemMemory(ApplicationContexItem *applicationcontexitem);
   void DUL_GetPresentationContextItemMemory(PresentationContextItem *presentationcontextitem);
   void DUL_GetUserInfoItemItemMemory(UserInfoItem *userinfoitem);
@@ -25,7 +29,9 @@ private:
   void DUL_GetAbstractSyntaxMemory(SyntaxItem *abstractsyntaxitem);
   void DUL_GetTransferSyntaxMemory(SyntaxItem *transfersyntaxitem);
   void DUL_GetMaximumLengthItemMemory(MaximumLengthItem *maximumlengthitem);
-  void DUL_GetBuffer(const char *data, int len);
+  void DUL_GetBufferFromPoint(const char *data, int len);
+  void DUL_GetBufferFromInt(int data, int len);
+
 private:
   TcpSocket *tcpSocket;
   int conn;

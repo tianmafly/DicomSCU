@@ -1,4 +1,5 @@
 #include "associate.h"
+#include "../pdu/associaterqpdu.h"
 
 int main()
 {

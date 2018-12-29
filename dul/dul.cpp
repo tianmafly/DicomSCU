@@ -1,6 +1,6 @@
 #include "dul.h"
 #include <string.h>
-
+#include <stdio.h>
 
 AssociateRQDUL::AssociateRQDUL(string ip, int port)
 {
@@ -22,7 +22,11 @@ AssociateRQDUL::~AssociateRQDUL()
 
 void AssociateRQDUL::DUL_sendAssociateRQ(AssociateRQPDU *associaterqpdu)
 {
-    char *buffer = DUL_GetAssociateRQPUDMemory(associaterqpdu);
+    Data data = DUL_GetAssociateRQPUDMemory(associaterqpdu);
+    for(int i=0; i<data.len; i++)
+    {
+        printf("%c\n", buffer[i]);
+    }
     tcpSocket->Send(conn, buffer);
 }
 
@@ -31,47 +35,49 @@ void AssociateRQDUL::DUL_ReceiveAssociateAC()
 
 }
 
-char * AssociateRQDUL::DUL_GetAssociateRQPUDMemory(AssociateRQPDU *associaterqpdu)
+Data AssociateRQDUL::DUL_GetAssociateRQPUDMemory(AssociateRQPDU *associaterqpdu)
 {
     int32_t associaterqpudheadlen = sizeof(associaterqpdu->pduHead.PduType) + sizeof(associaterqpdu->pduHead.Reserved) + sizeof(associaterqpdu->pduHead.PduLen);
     int32_t associaterqpudlen = associaterqpudheadlen + associaterqpdu->pduHead.PduLen;
-    char *buffer = new char[associaterqpudlen];
+    Data data;
+    data.len = associaterqpudlen;
+    data.buffer = new char[data.len];
 
     //pdu head
-    buffer[index] = associaterqpdu->pduHead.PduType;
+    DUL_GetBufferFromPoint(&(associaterqpdu->pduHead.PduType), sizeof(associaterqpdu->pduHead.PduType));
+    DUL_GetBufferFromPoint(&(associaterqpdu->pduHead.Reserved), sizeof(associaterqpdu->pduHead.Reserved));
+    DUL_GetBufferFromInt(associaterqpdu->pduHead.PduLen, sizeof(associaterqpdu->pduHead.PduLen));
 
-    DUL_GetBuffer(&(associaterqpdu->pduHead.PduType), sizeof(associaterqpdu->pduHead.PduType));
-    DUL_GetBuffer(&(associaterqpdu->pduHead.Reserved), sizeof(associaterqpdu->pduHead.Reserved));
-    DUL_GetBuffer((char*)(associaterqpdu->pduHead.PduLen), sizeof(associaterqpdu->pduHead.PduLen));
-
-    DUL_GetBuffer((char*)(associaterqpdu->ProtocolVersion), sizeof(associaterqpdu->ProtocolVersion));
-    DUL_GetBuffer((char*)(associaterqpdu->Reserved1), sizeof(associaterqpdu->Reserved1));
-    DUL_GetBuffer(associaterqpdu->CalledAE, sizeof(associaterqpdu->CalledAE));
-    DUL_GetBuffer(associaterqpdu->CallingAE, sizeof(associaterqpdu->CallingAE));
-    DUL_GetBuffer(associaterqpdu->Reserved2, sizeof(associaterqpdu->Reserved2));
+    DUL_GetBufferFromInt(associaterqpdu->ProtocolVersion, sizeof(associaterqpdu->ProtocolVersion));
+    DUL_GetBufferFromInt(associaterqpdu->Reserved1, sizeof(associaterqpdu->Reserved1));
+    DUL_GetBufferFromPoint(associaterqpdu->CalledAE, sizeof(associaterqpdu->CalledAE));
+    DUL_GetBufferFromPoint(associaterqpdu->CallingAE, sizeof(associaterqpdu->CallingAE));
+    DUL_GetBufferFromPoint(associaterqpdu->Reserved2, sizeof(associaterqpdu->Reserved2));
 
     DUL_GetApplicationContexItemMemory(&(associaterqpdu->applicationContexItem));
     DUL_GetPresentationContextItemMemory(&(associaterqpdu->presentationContextItem));
     DUL_GetUserInfoItemItemMemory(&(associaterqpdu->userInfoItem));
+
+    return data;
 }
 
 void AssociateRQDUL::DUL_GetApplicationContexItemMemory(ApplicationContexItem *applicationcontexitem)
 {
-    DUL_GetBuffer(&(applicationcontexitem->itemHead.ItemType), sizeof(applicationcontexitem->itemHead.ItemType));
-    DUL_GetBuffer(&(applicationcontexitem->itemHead.Reserved), sizeof(applicationcontexitem->itemHead.Reserved));
-    DUL_GetBuffer((char*)(applicationcontexitem->itemHead.ItemLen), sizeof(applicationcontexitem->itemHead.ItemLen));
+    DUL_GetBufferFromPoint(&(applicationcontexitem->itemHead.ItemType), sizeof(applicationcontexitem->itemHead.ItemType));
+    DUL_GetBufferFromPoint(&(applicationcontexitem->itemHead.Reserved), sizeof(applicationcontexitem->itemHead.Reserved));
+    DUL_GetBufferFromInt(applicationcontexitem->itemHead.ItemLen, sizeof(applicationcontexitem->itemHead.ItemLen));
 
-    DUL_GetBuffer(applicationcontexitem->AppicationContextName.c_str(), sizeof(applicationcontexitem->AppicationContextName));
+    DUL_GetBufferFromPoint(applicationcontexitem->AppicationContextName.c_str(), sizeof(applicationcontexitem->AppicationContextName));
 }
 
 void AssociateRQDUL::DUL_GetPresentationContextItemMemory(PresentationContextItem *presentationcontextitem)
 {
-    DUL_GetBuffer(&(presentationcontextitem->itemHead.ItemType), sizeof(presentationcontextitem->itemHead.ItemType));
-    DUL_GetBuffer(&(presentationcontextitem->itemHead.Reserved), sizeof(presentationcontextitem->itemHead.Reserved));
-    DUL_GetBuffer((char*)(presentationcontextitem->itemHead.ItemLen), sizeof(presentationcontextitem->itemHead.ItemLen));
+    DUL_GetBufferFromPoint(&(presentationcontextitem->itemHead.ItemType), sizeof(presentationcontextitem->itemHead.ItemType));
+    DUL_GetBufferFromPoint(&(presentationcontextitem->itemHead.Reserved), sizeof(presentationcontextitem->itemHead.Reserved));
+    DUL_GetBufferFromInt(presentationcontextitem->itemHead.ItemLen, sizeof(presentationcontextitem->itemHead.ItemLen));
 
-    DUL_GetBuffer((char*)(presentationcontextitem->PresentationContextID), sizeof(presentationcontextitem->PresentationContextID));
-    DUL_GetBuffer(presentationcontextitem->Reserved, sizeof(presentationcontextitem->Reserved));
+    DUL_GetBufferFromInt(presentationcontextitem->PresentationContextID, sizeof(presentationcontextitem->PresentationContextID));
+    DUL_GetBufferFromPoint(presentationcontextitem->Reserved, sizeof(presentationcontextitem->Reserved));
 
     for(int i = 0;i < presentationcontextitem->negotiationSyntaxItem.size();i++)
     {
@@ -85,9 +91,9 @@ void AssociateRQDUL::DUL_GetPresentationContextItemMemory(PresentationContextIte
 
 void AssociateRQDUL::DUL_GetUserInfoItemItemMemory(UserInfoItem *userinfoitem)
 {
-    DUL_GetBuffer(&(userinfoitem->itemHead.ItemType), sizeof(userinfoitem->itemHead.ItemType));
-    DUL_GetBuffer(&(userinfoitem->itemHead.Reserved), sizeof(userinfoitem->itemHead.Reserved));
-    DUL_GetBuffer((char*)(userinfoitem->itemHead.ItemLen), sizeof(userinfoitem->itemHead.ItemLen));
+    DUL_GetBufferFromPoint(&(userinfoitem->itemHead.ItemType), sizeof(userinfoitem->itemHead.ItemType));
+    DUL_GetBufferFromPoint(&(userinfoitem->itemHead.Reserved), sizeof(userinfoitem->itemHead.Reserved));
+    DUL_GetBufferFromInt(userinfoitem->itemHead.ItemLen, sizeof(userinfoitem->itemHead.ItemLen));
 
     DUL_GetMaximumLengthItemMemory(&(userinfoitem->maxLenItem));
 
@@ -95,33 +101,43 @@ void AssociateRQDUL::DUL_GetUserInfoItemItemMemory(UserInfoItem *userinfoitem)
 
 void AssociateRQDUL::DUL_GetAbstractSyntaxMemory(SyntaxItem *abstractsyntaxitem)
 {
-    DUL_GetBuffer(&(abstractsyntaxitem->itemHead.ItemType), sizeof(abstractsyntaxitem->itemHead.ItemType));
-    DUL_GetBuffer(&(abstractsyntaxitem->itemHead.Reserved), sizeof(abstractsyntaxitem->itemHead.Reserved));
-    DUL_GetBuffer((char*)(abstractsyntaxitem->itemHead.ItemLen), sizeof(abstractsyntaxitem->itemHead.ItemLen));
+    DUL_GetBufferFromPoint(&(abstractsyntaxitem->itemHead.ItemType), sizeof(abstractsyntaxitem->itemHead.ItemType));
+    DUL_GetBufferFromPoint(&(abstractsyntaxitem->itemHead.Reserved), sizeof(abstractsyntaxitem->itemHead.Reserved));
+    DUL_GetBufferFromInt(abstractsyntaxitem->itemHead.ItemLen, sizeof(abstractsyntaxitem->itemHead.ItemLen));
 
-    DUL_GetBuffer(abstractsyntaxitem->Syntax.c_str(), abstractsyntaxitem->Syntax.size());
+    DUL_GetBufferFromPoint(abstractsyntaxitem->Syntax.c_str(), abstractsyntaxitem->Syntax.size());
 }
 
 void AssociateRQDUL::DUL_GetTransferSyntaxMemory(SyntaxItem *transfersyntaxitem)
 {
-    DUL_GetBuffer(&(transfersyntaxitem->itemHead.ItemType), sizeof(transfersyntaxitem->itemHead.ItemType));
-    DUL_GetBuffer(&(transfersyntaxitem->itemHead.Reserved), sizeof(transfersyntaxitem->itemHead.Reserved));
-    DUL_GetBuffer((char*)(transfersyntaxitem->itemHead.ItemLen), sizeof(transfersyntaxitem->itemHead.ItemLen));
+    DUL_GetBufferFromPoint(&(transfersyntaxitem->itemHead.ItemType), sizeof(transfersyntaxitem->itemHead.ItemType));
+    DUL_GetBufferFromPoint(&(transfersyntaxitem->itemHead.Reserved), sizeof(transfersyntaxitem->itemHead.Reserved));
+    DUL_GetBufferFromInt(transfersyntaxitem->itemHead.ItemLen, sizeof(transfersyntaxitem->itemHead.ItemLen));
 
-    DUL_GetBuffer(transfersyntaxitem->Syntax.c_str(), transfersyntaxitem->Syntax.size());
+    DUL_GetBufferFromPoint(transfersyntaxitem->Syntax.c_str(), transfersyntaxitem->Syntax.size());
 }
 
 void AssociateRQDUL::DUL_GetMaximumLengthItemMemory(MaximumLengthItem *maximumlengthitem)
 {
-    DUL_GetBuffer(&(maximumlengthitem->itemHead.ItemType), sizeof(maximumlengthitem->itemHead.ItemType));
-    DUL_GetBuffer(&(maximumlengthitem->itemHead.Reserved), sizeof(maximumlengthitem->itemHead.Reserved));
-    DUL_GetBuffer((char*)(maximumlengthitem->itemHead.ItemLen), sizeof(maximumlengthitem->itemHead.ItemLen));
+    DUL_GetBufferFromPoint(&(maximumlengthitem->itemHead.ItemType), sizeof(maximumlengthitem->itemHead.ItemType));
+    DUL_GetBufferFromPoint(&(maximumlengthitem->itemHead.Reserved), sizeof(maximumlengthitem->itemHead.Reserved));
+    DUL_GetBufferFromInt(maximumlengthitem->itemHead.ItemLen, sizeof(maximumlengthitem->itemHead.ItemLen));
 
-    DUL_GetBuffer((char*)(maximumlengthitem->MaxLenReceived), sizeof(maximumlengthitem->MaxLenReceived));
+    DUL_GetBufferFromInt(maximumlengthitem->MaxLenReceived, sizeof(maximumlengthitem->MaxLenReceived));
 }
 
-void AssociateRQDUL::DUL_GetBuffer(const char *data, int len)
+void AssociateRQDUL::DUL_GetBufferFromPoint(const char *data, int len)
 {
     memcpy(buffer + index, data, len);
     index += len;
+}
+
+void  AssociateRQDUL::DUL_GetBufferFromInt(int data, int len)
+{
+    for(int i=0; i<len; i++)
+    {
+        buffer[index++] = (data & 0xFF);
+        data = data >> 8;
+    }
+    
 }

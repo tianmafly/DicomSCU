@@ -1,3 +1,7 @@
+#ifndef ASSOCIATERQ_H
+#define ASSOCIATERQ_H
+
+
 #include "../pdu/associaterqpdu.h"
 #include <string>
 
@@ -27,4 +31,4 @@ private:
     AssociateRQPDU *associateRQPDU;
 };
 
-
+#endif
