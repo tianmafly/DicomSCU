@@ -9,7 +9,7 @@ int main()
 
     memset(buff, 0, sizeof(buff));
     TcpSocket socket_scp = TcpSocket();
-    socket_scp.OpenSocket(11113);
+    socket_scp.OpenSocket(4100);
     int conn = socket_scp.Accept();
     socket_scp.Reveive(conn, buff);
     socket_scp.Send(conn, sendbuff);

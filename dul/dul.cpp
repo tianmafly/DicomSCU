@@ -5,7 +5,6 @@
 AssociateRQDUL::AssociateRQDUL(string ip, int port)
 {
     index = 0;
-    char * buffer = NULL;
 
     tcpSocket = new TcpSocket();
     conn = tcpSocket->Connet(ip, port);
@@ -15,19 +14,16 @@ AssociateRQDUL::~AssociateRQDUL()
 {
     delete tcpSocket;
     tcpSocket = NULL;
-
-    delete buffer;
-    buffer = NULL;
 }
 
 void AssociateRQDUL::DUL_sendAssociateRQ(AssociateRQPDU *associaterqpdu)
 {
-    Data data = DUL_GetAssociateRQPUDMemory(associaterqpdu);
-    for(int i=0; i<data.len; i++)
+    DUL_GetAssociateRQPUDMemory(associaterqpdu);
+    for(int i=0; i<this->associatedata.len; i++)
     {
-        printf("%c\n", buffer[i]);
+        printf("%X: %d\n", this->associatedata.buffer[i], i);
     }
-    tcpSocket->Send(conn, buffer);
+    tcpSocket->Send(conn, this->associatedata.buffer, this->associatedata.len);
 }
 
 void AssociateRQDUL::DUL_ReceiveAssociateAC()
@@ -35,13 +31,11 @@ void AssociateRQDUL::DUL_ReceiveAssociateAC()
 
 }
 
-Data AssociateRQDUL::DUL_GetAssociateRQPUDMemory(AssociateRQPDU *associaterqpdu)
+void AssociateRQDUL::DUL_GetAssociateRQPUDMemory(AssociateRQPDU *associaterqpdu)
 {
     int32_t associaterqpudheadlen = sizeof(associaterqpdu->pduHead.PduType) + sizeof(associaterqpdu->pduHead.Reserved) + sizeof(associaterqpdu->pduHead.PduLen);
     int32_t associaterqpudlen = associaterqpudheadlen + associaterqpdu->pduHead.PduLen;
-    Data data;
-    data.len = associaterqpudlen;
-    data.buffer = new char[data.len];
+    this->associatedata.len = associaterqpudlen;
 
     //pdu head
     DUL_GetBufferFromPoint(&(associaterqpdu->pduHead.PduType), sizeof(associaterqpdu->pduHead.PduType));
@@ -57,8 +51,6 @@ Data AssociateRQDUL::DUL_GetAssociateRQPUDMemory(AssociateRQPDU *associaterqpdu)
     DUL_GetApplicationContexItemMemory(&(associaterqpdu->applicationContexItem));
     DUL_GetPresentationContextItemMemory(&(associaterqpdu->presentationContextItem));
     DUL_GetUserInfoItemItemMemory(&(associaterqpdu->userInfoItem));
-
-    return data;
 }
 
 void AssociateRQDUL::DUL_GetApplicationContexItemMemory(ApplicationContexItem *applicationcontexitem)
@@ -67,7 +59,9 @@ void AssociateRQDUL::DUL_GetApplicationContexItemMemory(ApplicationContexItem *a
     DUL_GetBufferFromPoint(&(applicationcontexitem->itemHead.Reserved), sizeof(applicationcontexitem->itemHead.Reserved));
     DUL_GetBufferFromInt(applicationcontexitem->itemHead.ItemLen, sizeof(applicationcontexitem->itemHead.ItemLen));
 
-    DUL_GetBufferFromPoint(applicationcontexitem->AppicationContextName.c_str(), sizeof(applicationcontexitem->AppicationContextName));
+    // convert &ApplicationContexItem to point cause applicationcontexitem->AppicationContextName changed
+    // DUL_GetBufferFromPoint(applicationcontexitem->AppicationContextName.c_str(), applicationcontexitem->AppicationContextName.size());
+    DUL_GetBufferFromPoint(applicationcontexitem->AppicationContextName.c_str(), applicationcontexitem->itemHead.ItemLen);
 }
 
 void AssociateRQDUL::DUL_GetPresentationContextItemMemory(PresentationContextItem *presentationcontextitem)
@@ -128,7 +122,7 @@ void AssociateRQDUL::DUL_GetMaximumLengthItemMemory(MaximumLengthItem *maximumle
 
 void AssociateRQDUL::DUL_GetBufferFromPoint(const char *data, int len)
 {
-    memcpy(buffer + index, data, len);
+    memcpy(this->associatedata.buffer + index, data, len);
     index += len;
 }
 
@@ -136,7 +130,7 @@ void  AssociateRQDUL::DUL_GetBufferFromInt(int data, int len)
 {
     for(int i=0; i<len; i++)
     {
-        buffer[index++] = (data & 0xFF);
+        this->associatedata.buffer[index++] = (data & 0xFF);
         data = data >> 8;
     }
     

@@ -122,7 +122,7 @@ UserInfoItem AssociateRQ::InitUserInfoItem(uint32_t maximumLength)
     userinfoitem.maxLenItem = InitMaximumLength(maximumLength);
     int maxlenitemlen = userinfoitem.maxLenItem.itemHead.ItemLen + itemheadlength;
 
-    userinfoitem.itemHead.ItemLen = maxlenitemlen + itemheadlength;
+    userinfoitem.itemHead.ItemLen = maxlenitemlen;
 
     return userinfoitem;
 }

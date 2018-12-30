@@ -4,5 +4,5 @@ associate.o: associate.h associate.cpp associaterq.o
 	g++ -g -c associate.cpp
 associaterq.o: associaterq.h associaterq.cpp 
 	g++ -g -c associaterq.cpp -o associaterq.o
-
-
+clean:
+	rm main *.o

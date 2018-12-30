@@ -20,7 +20,7 @@ public:
   void DUL_sendAssociateRQ(AssociateRQPDU *associaterqpdu);
   void DUL_ReceiveAssociateAC();
 private:
-  Data DUL_GetAssociateRQPUDMemory(AssociateRQPDU *associaterqpdu);
+  void DUL_GetAssociateRQPUDMemory(AssociateRQPDU *associaterqpdu);
   void DUL_GetApplicationContexItemMemory(ApplicationContexItem *applicationcontexitem);
   void DUL_GetPresentationContextItemMemory(PresentationContextItem *presentationcontextitem);
   void DUL_GetUserInfoItemItemMemory(UserInfoItem *userinfoitem);
@@ -35,7 +35,7 @@ private:
 private:
   TcpSocket *tcpSocket;
   int conn;
-  char * buffer;
+  Data associatedata;
   int index;
 };
 

@@ -71,11 +71,10 @@ int TcpSocket::Connet(string IP, int Port)
     return socketfd;
 }
 
-void TcpSocket::Send(int socketfd, const char* buff)
+void TcpSocket::Send(int socketfd, const char* buff, int len)
 {
-    int buflen = sizeof((char*)buff);
-    int retlen = send(socketfd, buff,  buflen, 0);
-    if(retlen != buflen)
+    int retlen = send(socketfd, buff,  len, 0);
+    if(retlen != len)
     {
         perror("Send");
         return;

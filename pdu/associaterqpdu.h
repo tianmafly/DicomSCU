@@ -48,7 +48,7 @@ struct ApplicationContexItem
 struct PresentationContextItem
 {
     ItemHead itemHead;
-    uint16_t PresentationContextID;
+    char PresentationContextID;
     char Reserved[3];
     vector<NegotiationSyntaxItem> negotiationSyntaxItem;
 };
