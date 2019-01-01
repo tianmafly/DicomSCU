@@ -128,10 +128,14 @@ void AssociateRQDUL::DUL_GetBufferFromPoint(const char *data, int len)
 
 void  AssociateRQDUL::DUL_GetBufferFromInt(int data, int len)
 {
+    // 大端排列,scp服务端按照长度截取,直接转换为内存中的整形值.
+    int pos = len - 1;
     for(int i=0; i<len; i++)
     {
-        this->associatedata.buffer[index++] = (data & 0xFF);
+        
+        this->associatedata.buffer[index+pos] = (data & 0xFF);
         data = data >> 8;
+        pos--;
     }
-    
+    index += len;
 }

@@ -48,7 +48,7 @@ void AssociateRQ::InitDefaultAssociateRQPDU(AssociateRQPDU *associaterqpdu)
 
     associaterqpdu->applicationContexItem = InitApplicationContextItem();
     associaterqpdu->presentationContextItem = InitPresentationContextItem();
-    associaterqpdu->userInfoItem = InitUserInfoItem(65535);
+    associaterqpdu->userInfoItem = InitUserInfoItem(10000);
 
     uint16_t applicationcontexitemlen = associaterqpdu->applicationContexItem.itemHead.ItemLen + itemheadlength;
     uint16_t presentationcontextitemlen = associaterqpdu->presentationContextItem.itemHead.ItemLen + itemheadlength;
