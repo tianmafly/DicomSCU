@@ -1,5 +1,5 @@
-#ifndef ASSOCIATERQPDU_H
-#define ASSOCIATERQPDU_H
+#ifndef ASSOCIATEACPDU_H
+#define ASSOCIATEACPDU_H
 
 
 #include <vector>
@@ -27,12 +27,6 @@ struct SyntaxItem
     string Syntax;
 };
 
-struct NegotiationSyntaxItem
-{
-    SyntaxItem abstractSyntax;
-    vector<SyntaxItem> transferSyntaxlist;
-};
-
 struct MaximumLengthItem
 {
     ItemHead itemHead;
@@ -49,8 +43,10 @@ struct PresentationContextItem
 {
     ItemHead itemHead;
     char PresentationContextID;
-    char Reserved[3];
-    vector<NegotiationSyntaxItem> negotiationSyntaxItem;
+    char Reserved1;
+    char Result;
+    char Reserved2;
+    SyntaxItem transferSyntax;
 };
 
 struct UserInfoItem
@@ -68,10 +64,10 @@ struct AssociateRQPDU
     PduHead pduHead;
 
     uint16_t ProtocolVersion;
-    uint16_t Reserved1;
-    char CalledAE[16];
-    char CallingAE[16];
-    char Reserved2[32];
+    char Reserved1[2];
+    char Reserved2[16];
+    char Reserved3[16];
+    char Reserved4[32];
 
     ApplicationContexItem applicationContexItem;
     vector<PresentationContextItem> presentationContextItemlist;

@@ -47,11 +47,15 @@ void AssociateRQ::InitDefaultAssociateRQPDU(AssociateRQPDU *associaterqpdu)
     memset(associaterqpdu->Reserved2, 0, sizeof(associaterqpdu->Reserved2));
 
     associaterqpdu->applicationContexItem = InitApplicationContextItem();
-    associaterqpdu->presentationContextItem = InitPresentationContextItem();
+    associaterqpdu->presentationContextItemlist.push_back(InitPresentationContextItem());
     associaterqpdu->userInfoItem = InitUserInfoItem(10000);
 
     uint16_t applicationcontexitemlen = associaterqpdu->applicationContexItem.itemHead.ItemLen + itemheadlength;
-    uint16_t presentationcontextitemlen = associaterqpdu->presentationContextItem.itemHead.ItemLen + itemheadlength;
+    uint16_t presentationcontextitemlen = 0;
+    for(int i=0; i<associaterqpdu->presentationContextItemlist.size(); i++)
+    {
+        presentationcontextitemlen += associaterqpdu->presentationContextItemlist[i].itemHead.ItemLen + itemheadlength;
+    }
     uint16_t userinfoitemlen = associaterqpdu->userInfoItem.itemHead.ItemLen + itemheadlength;
 
     associaterqpdu->pduHead.PduLen =  sizeof(associaterqpdu->ProtocolVersion) + 

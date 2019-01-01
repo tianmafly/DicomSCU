@@ -49,7 +49,10 @@ void AssociateRQDUL::DUL_GetAssociateRQPUDMemory(AssociateRQPDU *associaterqpdu)
     DUL_GetBufferFromPoint(associaterqpdu->Reserved2, sizeof(associaterqpdu->Reserved2));
 
     DUL_GetApplicationContexItemMemory(&(associaterqpdu->applicationContexItem));
-    DUL_GetPresentationContextItemMemory(&(associaterqpdu->presentationContextItem));
+    for(int i=0; i<associaterqpdu->presentationContextItemlist.size();i++)
+    {
+        DUL_GetPresentationContextItemMemory(&(associaterqpdu->presentationContextItemlist[i]));
+    }
     DUL_GetUserInfoItemItemMemory(&(associaterqpdu->userInfoItem));
 }
 
