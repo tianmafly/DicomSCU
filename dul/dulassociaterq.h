@@ -1,8 +1,9 @@
-#ifndef DUL_H
-#define DUL_H
+#ifndef DULASSOCIATERQ_H
+#define DULASSOCIATERQ_H
 
 #include "../socket/socket.h"
-#include "../pdu/associaterqpdu.h"
+#include "../pdu/pduassociaterq.h"
+using namespace AssociateRQPDU_NameSpace;
 
 struct Data
 {
@@ -17,8 +18,7 @@ public:
   ~AssociateRQDUL();
 
 public:
-  void DUL_sendAssociateRQ(AssociateRQPDU *associaterqpdu);
-  void DUL_ReceiveAssociateAC();
+  int DUL_sendAssociateRQ(AssociateRQPDU *associaterqpdu);
 private:
   void DUL_GetAssociateRQPUDMemory(AssociateRQPDU *associaterqpdu);
   void DUL_GetApplicationContexItemMemory(ApplicationContexItem *applicationcontexitem);

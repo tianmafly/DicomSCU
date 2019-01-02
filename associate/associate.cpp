@@ -3,10 +3,11 @@
 #include <string.h>
 #include "../type/uid.h"
 #include "associaterq.h"
+#include "associateac.h"
 
 Associate::Associate(/* args */)
 {
-
+    conn = -1;
 }
 
 Associate::~Associate()
@@ -14,13 +15,14 @@ Associate::~Associate()
 
 }
 
-void Associate::SendAssociateRQ(AssociateRQPDU *associateRQPDU, AssociateParas associateParas)
+void Associate::SendAssociateRQ(AssociateRQPDU_NameSpace::AssociateRQPDU *associaterqpdu, AssociateParas associateparas)
 {
-    AssociateRQ associateRQ(associateRQPDU, associateParas.CallingAE, associateParas.CalledAE);
-    associateRQ.SendAssociateRQ(associateParas.SCPIP, associateParas.SCPPort);
+    AssociateRQ associateRQ(associaterqpdu, associateparas.CallingAE, associateparas.CalledAE);
+    conn = associateRQ.SendAssociateRQ(associateparas.SCPIP, associateparas.SCPPort);
 }
 
-void Associate::ReceiveAssociateAC()
+void Associate::ReceiveAssociateAC(AssociateACPDU_NameSpace::AssociateACPDU *associateacpdu)
 {
-
+    AssociateAC associateAC(associateacpdu);
+    associateAC.ReceiveAssociateAC(conn);
 }

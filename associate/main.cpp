@@ -1,18 +1,19 @@
 #include "associate.h"
-#include "../pdu/associaterqpdu.h"
-
+#include "../pdu/pduassociaterq.h"
+#include "../pdu/pduassociateac.h"
 int main()
 {
-    AssociateRQPDU *associateRQPDU = new AssociateRQPDU();
+    AssociateRQPDU_NameSpace::AssociateRQPDU *associaterqpdu = new AssociateRQPDU_NameSpace::AssociateRQPDU();
     AssociateParas associateParas;
     associateParas.CallingAE = "TEST_AET";
     associateParas.CalledAE = "TEST_STORE";
     associateParas.SCPIP = "127.0.0.1";
     associateParas.SCPPort = 4100;
 
-    Associate associate;
-    associate.SendAssociateRQ(associateRQPDU, associateParas);
+    AssociateACPDU_NameSpace::AssociateACPDU *associateacpdu = new AssociateACPDU_NameSpace::AssociateACPDU();
 
-    delete associateRQPDU;
-    associateRQPDU = NULL;
+    Associate associate;
+    associate.SendAssociateRQ(associaterqpdu, associateParas);
+    associate.ReceiveAssociateAC(associateacpdu);
+    
 }

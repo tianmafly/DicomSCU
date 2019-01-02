@@ -1,7 +1,7 @@
 #include "associaterq.h"
 #include <string.h>
 #include "../type/uid.h"
-#include "../dul/dul.h"
+#include "../dul/dulassociaterq.h"
 
 AssociateRQ::AssociateRQ(AssociateRQPDU *associaterqpdu, string callingae, string calledae)
 {
@@ -16,10 +16,10 @@ AssociateRQ::~AssociateRQ()
 {
 }
 
-void AssociateRQ::SendAssociateRQ(string ip, int port)
+int AssociateRQ::SendAssociateRQ(string ip, int port)
 {
     AssociateRQDUL associateRQDUL(ip, port);
-    associateRQDUL.DUL_sendAssociateRQ(this->associateRQPDU);
+    return associateRQDUL.DUL_sendAssociateRQ(this->associateRQPDU);
 }
 
 void AssociateRQ::InitAssociateRQPDU(AssociateRQPDU *associaterqpdu, string callingae, string calledae)
@@ -96,19 +96,16 @@ PresentationContextItem AssociateRQ::InitPresentationContextItem()
     NegotiationSyntaxItem negotiationsyntaxitem;
     negotiationsyntaxitem.abstractSyntax = InitAbstractSyntax(StudyRoot_QueryRetrieveInformationModel_FIND);
     negotiationsyntaxitem.transferSyntaxlist.push_back(InitTransferSyntax(ImplicitVRLittleEndian));
-    presentationcontextitem.negotiationSyntaxItem.push_back(negotiationsyntaxitem);
+    presentationcontextitem.negotiationSyntaxItem = negotiationsyntaxitem;
 
     int length = sizeof(presentationcontextitem.PresentationContextID) + sizeof(presentationcontextitem.Reserved);
-    for(int i = 0;i < presentationcontextitem.negotiationSyntaxItem.size();i++)
-    {
-        int abstractsyntaxitemlen = presentationcontextitem.negotiationSyntaxItem[i].abstractSyntax.itemHead.ItemLen + itemheadlength;
-        length += abstractsyntaxitemlen;
+    int abstractsyntaxitemlen = presentationcontextitem.negotiationSyntaxItem.abstractSyntax.itemHead.ItemLen + itemheadlength;
+    length += abstractsyntaxitemlen;
 
-        for(int j = 0;j < presentationcontextitem.negotiationSyntaxItem[i].transferSyntaxlist.size();j++)
-        {
-            int  transfersyntaxitemlen = presentationcontextitem.negotiationSyntaxItem[i].transferSyntaxlist[j].itemHead.ItemLen + itemheadlength;
-            length += transfersyntaxitemlen;
-        }
+    for(int j = 0;j < presentationcontextitem.negotiationSyntaxItem.transferSyntaxlist.size();j++)
+    {
+        int  transfersyntaxitemlen = presentationcontextitem.negotiationSyntaxItem.transferSyntaxlist[j].itemHead.ItemLen + itemheadlength;
+        length += transfersyntaxitemlen;
     }
 
     presentationcontextitem.itemHead.ItemLen = length;

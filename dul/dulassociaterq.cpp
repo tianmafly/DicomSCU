@@ -1,4 +1,4 @@
-#include "dul.h"
+#include "dulassociaterq.h"
 #include <string.h>
 #include <stdio.h>
 
@@ -16,7 +16,7 @@ AssociateRQDUL::~AssociateRQDUL()
     tcpSocket = NULL;
 }
 
-void AssociateRQDUL::DUL_sendAssociateRQ(AssociateRQPDU *associaterqpdu)
+int AssociateRQDUL::DUL_sendAssociateRQ(AssociateRQPDU *associaterqpdu)
 {
     DUL_GetAssociateRQPUDMemory(associaterqpdu);
     for(int i=0; i<this->associatedata.len; i++)
@@ -24,11 +24,8 @@ void AssociateRQDUL::DUL_sendAssociateRQ(AssociateRQPDU *associaterqpdu)
         printf("%X: %d\n", this->associatedata.buffer[i], i);
     }
     tcpSocket->Send(conn, this->associatedata.buffer, this->associatedata.len);
-}
 
-void AssociateRQDUL::DUL_ReceiveAssociateAC()
-{
-
+    return conn;
 }
 
 void AssociateRQDUL::DUL_GetAssociateRQPUDMemory(AssociateRQPDU *associaterqpdu)
@@ -76,13 +73,10 @@ void AssociateRQDUL::DUL_GetPresentationContextItemMemory(PresentationContextIte
     DUL_GetBufferFromInt(presentationcontextitem->PresentationContextID, sizeof(presentationcontextitem->PresentationContextID));
     DUL_GetBufferFromPoint(presentationcontextitem->Reserved, sizeof(presentationcontextitem->Reserved));
 
-    for(int i = 0;i < presentationcontextitem->negotiationSyntaxItem.size();i++)
+    DUL_GetAbstractSyntaxMemory(&(presentationcontextitem->negotiationSyntaxItem.abstractSyntax));
+    for(int j = 0;j < presentationcontextitem->negotiationSyntaxItem.transferSyntaxlist.size();j++)
     {
-        DUL_GetAbstractSyntaxMemory(&(presentationcontextitem->negotiationSyntaxItem[i].abstractSyntax));
-        for(int j = 0;j < presentationcontextitem->negotiationSyntaxItem[i].transferSyntaxlist.size();j++)
-        {
-            DUL_GetTransferSyntaxMemory(&(presentationcontextitem->negotiationSyntaxItem[i].transferSyntaxlist[j]));
-        }
+        DUL_GetTransferSyntaxMemory(&(presentationcontextitem->negotiationSyntaxItem.transferSyntaxlist[j]));
     }
 }
 

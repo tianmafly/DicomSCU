@@ -2,10 +2,12 @@
 #define ASSOCIATERQ_H
 
 
-#include "../pdu/associaterqpdu.h"
+#include "../pdu/pduassociaterq.h"
 #include <string>
 
 using namespace std;
+using namespace AssociateRQPDU_NameSpace;
+
 
 class AssociateRQ
 {
@@ -13,7 +15,7 @@ public:
     AssociateRQ(AssociateRQPDU *associaterqpdu, string callingae, string calledae);
     ~AssociateRQ();
 public:
-    void SendAssociateRQ(string ip, int port);
+    int SendAssociateRQ(string ip, int port);
     
 private:
     void InitDefaultAssociateRQPDU(AssociateRQPDU *associaterqpdu);
