@@ -16,4 +16,5 @@ int main()
     associate.SendAssociateRQ(associaterqpdu, associateParas);
     associate.ReceiveAssociateAC(associateacpdu);
     
+    int x = 312;
 }

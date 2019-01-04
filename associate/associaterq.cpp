@@ -77,6 +77,8 @@ ApplicationContexItem AssociateRQ::InitApplicationContextItem()
 
     applicationcontexitem.itemHead.ItemType = 0x10;
     applicationcontexitem.itemHead.Reserved = 0x00;
+
+    applicationcontexitem.AppicationContextName = new unsigned char[sizeof("1.2.840.10008.3.1.1.1")];
     memcpy(applicationcontexitem.AppicationContextName, "1.2.840.10008.3.1.1.1", sizeof("1.2.840.10008.3.1.1.1"));
     applicationcontexitem.itemHead.ItemLen = sizeof("1.2.840.10008.3.1.1.1");
 
