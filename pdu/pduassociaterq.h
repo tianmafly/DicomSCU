@@ -12,22 +12,22 @@ namespace AssociateRQPDU_NameSpace
 {
 struct PduHead
 {
-    char PduType;
-    char Reserved;
+    unsigned char PduType;
+    unsigned char Reserved;
     uint32_t PduLen;
 };
 
 struct ItemHead
 {
-    char ItemType;
-    char Reserved;
+    unsigned char ItemType;
+    unsigned char Reserved;
     uint16_t ItemLen;
 };
 
 struct SyntaxItem
 {
     ItemHead itemHead;
-    string Syntax;
+    unsigned char *Syntax;
 };
 
 struct NegotiationSyntaxItem
@@ -45,14 +45,14 @@ struct MaximumLengthItem
 struct ApplicationContexItem
 {
     ItemHead itemHead;
-    string AppicationContextName;
+    unsigned char *AppicationContextName;
 };
 
 struct PresentationContextItem
 {
     ItemHead itemHead;
-    char PresentationContextID;
-    char Reserved[3];
+    unsigned char PresentationContextID;
+    unsigned char Reserved[3];
     NegotiationSyntaxItem negotiationSyntaxItem;
 };
 
@@ -72,9 +72,9 @@ struct AssociateRQPDU
 
     uint16_t ProtocolVersion;
     uint16_t Reserved1;
-    char CalledAE[16];
-    char CallingAE[16];
-    char Reserved2[32];
+    unsigned char CalledAE[16];
+    unsigned char CallingAE[16];
+    unsigned char Reserved2[32];
 
     ApplicationContexItem applicationContexItem;
     vector<PresentationContextItem> presentationContextItemlist;

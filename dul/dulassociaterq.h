@@ -7,7 +7,7 @@ using namespace AssociateRQPDU_NameSpace;
 
 struct Data
 {
-  char* buffer;
+  unsigned char* buffer;
   int len;
 };
 
@@ -29,7 +29,7 @@ private:
   void DUL_GetAbstractSyntaxMemory(SyntaxItem *abstractsyntaxitem);
   void DUL_GetTransferSyntaxMemory(SyntaxItem *transfersyntaxitem);
   void DUL_GetMaximumLengthItemMemory(MaximumLengthItem *maximumlengthitem);
-  void DUL_GetBufferFromPoint(const char *data, int len);
+  void DUL_GetBufferFromPoint(const unsigned char *data, int len);
   void DUL_GetBufferFromInt(int data, int len);
 
 private:

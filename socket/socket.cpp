@@ -71,7 +71,7 @@ int TcpSocket::Connet(string IP, int Port)
     return socketfd;
 }
 
-void TcpSocket::Send(int socketfd, const char* buff, int len)
+void TcpSocket::Send(int socketfd, unsigned char* buff, int len)
 {
     int retlen = send(socketfd, buff,  len, 0);
     if(retlen != len)
@@ -82,11 +82,10 @@ void TcpSocket::Send(int socketfd, const char* buff, int len)
 
 }
 
-void TcpSocket::Reveive(int conn, char* buff)
+void TcpSocket::Reveive(int conn, unsigned char* buff, int len)
 {
-    int buflen = sizeof(buff);
-    int retlen = recv(conn, buff, buflen, 0);
-    if(retlen != buflen)
+    int retlen = recv(conn, buff, len, 0);
+    if(retlen != len)
     {
         perror("Reveive");
         return;

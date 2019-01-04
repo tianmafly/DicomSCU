@@ -20,18 +20,18 @@ AssociateACDUL::~AssociateACDUL()
 
 void AssociateACDUL::DUL_ReceiveAssociateAC(AssociateACPDU *associateacpdu)
 {
-    char pduhead[6];
+    unsigned char pduhead[6];
     memset(pduhead, 0, sizeof(pduhead));
-    tcpSocket->Reveive(this->conn, pduhead);
+    tcpSocket->Reveive(this->conn, pduhead, sizeof(pduhead));
     DUL_GetAssociateACPUDHead(associateacpdu, pduhead);
 
-    pdubody = new char[associateacpdu->pduHead.PduLen];
+    pdubody = new unsigned char[associateacpdu->pduHead.PduLen];
     memset(pdubody, 0, associateacpdu->pduHead.PduLen);
-    tcpSocket->Reveive(this->conn, pdubody);
+    tcpSocket->Reveive(this->conn, pdubody, associateacpdu->pduHead.PduLen);
     DUL_GetAssociateRQBodyPUD(associateacpdu);
 }
 
-void AssociateACDUL::DUL_GetAssociateACPUDHead(AssociateACPDU *associateacpdu, char *pduhead)
+void AssociateACDUL::DUL_GetAssociateACPUDHead(AssociateACPDU *associateacpdu,  unsigned char *pduhead)
 {
     associateacpdu->pduHead.PduType = pduhead[0];
     associateacpdu->pduHead.Reserved = pduhead[1];
@@ -47,10 +47,17 @@ void AssociateACDUL::DUL_GetAssociateACPUDHead(AssociateACPDU *associateacpdu, c
     DUL_GetPointFromBuffer(associateacpdu->Reserved4, sizeof(associateacpdu->Reserved4));
 
     DUL_GetApplicationContexItem(&(associateacpdu->applicationContexItem));
-    for(int i=0;i<associateacpdu->presentationContextItemlist.size();i++)
+    
+    while(true)
     {
-        DUL_GetPresentationContextItem(&(associateacpdu->presentationContextItemlist[i]));
+        if(pdubody[index] == 0x50)
+            break;
+
+        PresentationContextItem presentationContextItem;
+        DUL_GetPresentationContextItem(&presentationContextItem);
+        associateacpdu->presentationContextItemlist.push_back(presentationContextItem);
     }
+    
     DUL_GetUserInfoItemItem(&(associateacpdu->userInfoItem));
  }
 
@@ -58,7 +65,7 @@ void AssociateACDUL::DUL_GetApplicationContexItem(ApplicationContexItem *applica
 {
     DUL_GetItemHead(&(applicationcontexitem->itemHead));
 
-    applicationcontexitem->AppicationContextName = new char[applicationcontexitem->itemHead.ItemLen];
+    applicationcontexitem->AppicationContextName = new unsigned char[applicationcontexitem->itemHead.ItemLen];
     DUL_GetPointFromBuffer(applicationcontexitem->AppicationContextName, applicationcontexitem->itemHead.ItemLen);
 }
 
@@ -85,7 +92,7 @@ void AssociateACDUL::DUL_GetTransferSyntax(SyntaxItem *transfersyntaxitem)
 {
     DUL_GetItemHead(&(transfersyntaxitem->itemHead));
 
-    transfersyntaxitem->Syntax = new char[transfersyntaxitem->itemHead.ItemLen];
+    transfersyntaxitem->Syntax = new unsigned char[transfersyntaxitem->itemHead.ItemLen];
     DUL_GetPointFromBuffer(transfersyntaxitem->Syntax, transfersyntaxitem->itemHead.ItemLen);
 }
 
@@ -103,7 +110,7 @@ void AssociateACDUL::DUL_GetItemHead(ItemHead * itemhead)
     DUL_GetIntFromBuffer(&(itemhead->ItemLen), sizeof(itemhead->ItemLen));
 }
 
-void AssociateACDUL::DUL_GetPointFromBuffer(char *data, int len)
+void AssociateACDUL::DUL_GetPointFromBuffer(unsigned char *data, int len)
 {
     memcpy(data, pdubody+index, len);
     index += len;
@@ -111,6 +118,7 @@ void AssociateACDUL::DUL_GetPointFromBuffer(char *data, int len)
 
 void AssociateACDUL::DUL_GetIntFromBuffer(uint16_t *data, int len)
 {
+    *data = 0;
     for(int i=0; i<len; i++)
     {
         *data |= (pdubody[index] << (8 * ((len - 1) - i)));
@@ -120,6 +128,7 @@ void AssociateACDUL::DUL_GetIntFromBuffer(uint16_t *data, int len)
 
 void AssociateACDUL::DUL_GetIntFromBuffer(uint32_t *data, int len)
 {
+    *data = 0;
     for(int i=0; i<len; i++)
     {
         *data |= (pdubody[index] << (8 * ((len - 1) - i)));

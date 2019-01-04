@@ -61,7 +61,7 @@ void AssociateRQDUL::DUL_GetApplicationContexItemMemory(ApplicationContexItem *a
 
     // convert &ApplicationContexItem to point cause applicationcontexitem->AppicationContextName changed
     // DUL_GetBufferFromPoint(applicationcontexitem->AppicationContextName.c_str(), applicationcontexitem->AppicationContextName.size());
-    DUL_GetBufferFromPoint(applicationcontexitem->AppicationContextName.c_str(), applicationcontexitem->itemHead.ItemLen);
+    DUL_GetBufferFromPoint(applicationcontexitem->AppicationContextName, applicationcontexitem->itemHead.ItemLen);
 }
 
 void AssociateRQDUL::DUL_GetPresentationContextItemMemory(PresentationContextItem *presentationcontextitem)
@@ -96,7 +96,7 @@ void AssociateRQDUL::DUL_GetAbstractSyntaxMemory(SyntaxItem *abstractsyntaxitem)
     DUL_GetBufferFromPoint(&(abstractsyntaxitem->itemHead.Reserved), sizeof(abstractsyntaxitem->itemHead.Reserved));
     DUL_GetBufferFromInt(abstractsyntaxitem->itemHead.ItemLen, sizeof(abstractsyntaxitem->itemHead.ItemLen));
 
-    DUL_GetBufferFromPoint(abstractsyntaxitem->Syntax.c_str(), abstractsyntaxitem->Syntax.size());
+    DUL_GetBufferFromPoint(abstractsyntaxitem->Syntax, abstractsyntaxitem->itemHead.ItemLen);
 }
 
 void AssociateRQDUL::DUL_GetTransferSyntaxMemory(SyntaxItem *transfersyntaxitem)
@@ -105,7 +105,7 @@ void AssociateRQDUL::DUL_GetTransferSyntaxMemory(SyntaxItem *transfersyntaxitem)
     DUL_GetBufferFromPoint(&(transfersyntaxitem->itemHead.Reserved), sizeof(transfersyntaxitem->itemHead.Reserved));
     DUL_GetBufferFromInt(transfersyntaxitem->itemHead.ItemLen, sizeof(transfersyntaxitem->itemHead.ItemLen));
 
-    DUL_GetBufferFromPoint(transfersyntaxitem->Syntax.c_str(), transfersyntaxitem->Syntax.size());
+    DUL_GetBufferFromPoint(transfersyntaxitem->Syntax, transfersyntaxitem->itemHead.ItemLen);
 }
 
 void AssociateRQDUL::DUL_GetMaximumLengthItemMemory(MaximumLengthItem *maximumlengthitem)
@@ -117,7 +117,7 @@ void AssociateRQDUL::DUL_GetMaximumLengthItemMemory(MaximumLengthItem *maximumle
     DUL_GetBufferFromInt(maximumlengthitem->MaxLenReceived, sizeof(maximumlengthitem->MaxLenReceived));
 }
 
-void AssociateRQDUL::DUL_GetBufferFromPoint(const char *data, int len)
+void AssociateRQDUL::DUL_GetBufferFromPoint(const unsigned char *data, int len)
 {
     memcpy(this->associatedata.buffer + index, data, len);
     index += len;

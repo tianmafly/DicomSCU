@@ -19,6 +19,7 @@ void Associate::SendAssociateRQ(AssociateRQPDU_NameSpace::AssociateRQPDU *associ
 {
     AssociateRQ associateRQ(associaterqpdu, associateparas.CallingAE, associateparas.CalledAE);
     conn = associateRQ.SendAssociateRQ(associateparas.SCPIP, associateparas.SCPPort);
+    int b = 312;
 }
 
 void Associate::ReceiveAssociateAC(AssociateACPDU_NameSpace::AssociateACPDU *associateacpdu)

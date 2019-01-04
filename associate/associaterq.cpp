@@ -19,7 +19,9 @@ AssociateRQ::~AssociateRQ()
 int AssociateRQ::SendAssociateRQ(string ip, int port)
 {
     AssociateRQDUL associateRQDUL(ip, port);
-    return associateRQDUL.DUL_sendAssociateRQ(this->associateRQPDU);
+    // return associateRQDUL.DUL_sendAssociateRQ(this->associateRQPDU);
+    int conn = associateRQDUL.DUL_sendAssociateRQ(this->associateRQPDU);
+    return conn;
 }
 
 void AssociateRQ::InitAssociateRQPDU(AssociateRQPDU *associaterqpdu, string callingae, string calledae)
@@ -75,8 +77,8 @@ ApplicationContexItem AssociateRQ::InitApplicationContextItem()
 
     applicationcontexitem.itemHead.ItemType = 0x10;
     applicationcontexitem.itemHead.Reserved = 0x00;
-    applicationcontexitem.AppicationContextName = "1.2.840.10008.3.1.1.1";
-    applicationcontexitem.itemHead.ItemLen = applicationcontexitem.AppicationContextName.size();
+    memcpy(applicationcontexitem.AppicationContextName, "1.2.840.10008.3.1.1.1", sizeof("1.2.840.10008.3.1.1.1"));
+    applicationcontexitem.itemHead.ItemLen = sizeof("1.2.840.10008.3.1.1.1");
 
     return applicationcontexitem;
 }
@@ -133,8 +135,10 @@ SyntaxItem AssociateRQ::InitAbstractSyntax(string abstractSyntax)
     SyntaxItem abstractsyntax;
     abstractsyntax.itemHead.ItemType = 0x30;
     abstractsyntax.itemHead.Reserved = 0x00;
-    abstractsyntax.Syntax = abstractSyntax;
-    abstractsyntax.itemHead.ItemLen = abstractsyntax.Syntax.size();
+
+    abstractsyntax.Syntax = new unsigned char[abstractSyntax.size()];
+    memcpy(abstractsyntax.Syntax, abstractSyntax.c_str(), abstractSyntax.size());
+    abstractsyntax.itemHead.ItemLen = abstractSyntax.size();
 
     return abstractsyntax;
 }
@@ -145,8 +149,10 @@ SyntaxItem AssociateRQ::InitTransferSyntax(string transferSyntax)
 
     transfersyntax.itemHead.ItemType = 0x40;
     transfersyntax.itemHead.Reserved = 0x00;
-    transfersyntax.Syntax = transferSyntax;
-    transfersyntax.itemHead.ItemLen = transfersyntax.Syntax.size();
+
+    transfersyntax.Syntax = new unsigned char[transferSyntax.size()];
+    memcpy(transfersyntax.Syntax, transferSyntax.c_str(), transferSyntax.size());
+    transfersyntax.itemHead.ItemLen = transferSyntax.size();
 
     return transfersyntax;
 }

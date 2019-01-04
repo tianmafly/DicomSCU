@@ -14,8 +14,8 @@ public:
     void OpenSocket(int Port);
     int Accept();
     int Connet(string IP, int Port);
-    void Send(int conn, const char* buff, int len);
-    void Reveive(int conn, char* buff);
+    void Send(int conn, unsigned char* buff, int len);
+    void Reveive(int conn, unsigned char* buff, int len);
 private:
     int mainsocket;
 };

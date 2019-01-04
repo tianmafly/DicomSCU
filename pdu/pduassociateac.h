@@ -12,22 +12,22 @@ namespace AssociateACPDU_NameSpace
 {
 struct PduHead
 {
-    char PduType;
-    char Reserved;
+    unsigned char PduType;
+    unsigned char Reserved;
     uint32_t PduLen;
 };
 
 struct ItemHead
 {
-    char ItemType;
-    char Reserved;
+    unsigned char ItemType;
+    unsigned char Reserved;
     uint16_t ItemLen;
 };
 
 struct SyntaxItem
 {
     ItemHead itemHead;
-    char* Syntax;
+    unsigned char* Syntax;
 };
 
 struct MaximumLengthItem
@@ -39,16 +39,16 @@ struct MaximumLengthItem
 struct ApplicationContexItem
 {
     ItemHead itemHead;
-    char* AppicationContextName;
+    unsigned char* AppicationContextName;
 };
 
 struct PresentationContextItem
 {
     ItemHead itemHead;
-    char PresentationContextID;
-    char Reserved1;
-    char Result;
-    char Reserved2;
+    unsigned char PresentationContextID;
+    unsigned char Reserved1;
+    unsigned char Result;
+    unsigned char Reserved2;
     SyntaxItem transferSyntax;
 };
 
@@ -67,10 +67,10 @@ struct AssociateACPDU
     PduHead pduHead;
 
     uint16_t ProtocolVersion;
-    char Reserved1[2];
-    char Reserved2[16];
-    char Reserved3[16];
-    char Reserved4[32];
+    unsigned char Reserved1[2];
+    unsigned char Reserved2[16];
+    unsigned char Reserved3[16];
+    unsigned char Reserved4[32];
 
     ApplicationContexItem applicationContexItem;
     vector<PresentationContextItem> presentationContextItemlist;
