@@ -1,6 +1,9 @@
 #include "associate.h"
 #include "../pdu/pduassociaterq.h"
 #include "../pdu/pduassociateac.h"
+#include "../dimse/cfind/cfindrq.h"
+#include "../type/uid.h"
+#include "../dimse/dimse.h"
 int main()
 {
     AssociateRQPDU_NameSpace::AssociateRQPDU *associaterqpdu = new AssociateRQPDU_NameSpace::AssociateRQPDU();
@@ -16,5 +19,25 @@ int main()
     associate.SendAssociateRQ(associaterqpdu, associateParas);
     associate.ReceiveAssociateAC(associateacpdu);
     
+    vector<DcmElement> querykeylist;
+    DcmElement queryRetrieveLevel;
+
+    int tag = 0x00000000;
+    string value = "STUDY";
+    CDIMSE cDIMSE;
+    memcpy(queryRetrieveLevel.tag, &tag, sizeof(queryRetrieveLevel.tag));
+    cDIMSE.InitElementData(&queryRetrieveLevel, value.size(), (unsigned char*)value.c_str());
+
+    DcmElement studyID;
+    tag = 0x00000000;
+    uint32_t value1 = 123;
+    memcpy(studyID.tag, &tag, sizeof(studyID.tag));
+    cDIMSE.InitElementData(&studyID, sizeof(value1), value1);
+
+    querykeylist.push_back(queryRetrieveLevel);
+    querykeylist.push_back(studyID);
+
+    CFindRQ cFindRQ;
+    cFindRQ.SendCFindRQPDU(querykeylist, CFindStudyRoot, 1);
     int x = 312;
 }

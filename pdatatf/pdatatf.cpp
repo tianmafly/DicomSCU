@@ -1,0 +1,84 @@
+#include "pdatatf.h"
+#include <stdio.h>
+
+
+PDataTF::PDataTF(/* args */)
+{
+    pDataTFPDU = new PDataTFPDU();
+}
+
+PDataTF::~PDataTF()
+{
+    delete pDataTFPDU;
+    pDataTFPDU = NULL;
+}
+
+void PDataTF::InitDefaultPDataTFPDU(CDIMSE *command, int commandlen, vector<DcmElement> *dataset, int datasetlen, unsigned char presentationid)
+{
+    pDataTFPDU->headItam.pduType = 0x04;
+    pDataTFPDU->headItam.reserve = 0x00;
+
+    PDV commandpdv = InitCommandPresentationDataValue(command, commandlen);
+    PresentationDataValueItem commandpdvitem = InitPresentationDataValueItem(1, commandpdv);
+    pDataTFPDU->presentationDataValueItemList.push_back(commandpdvitem);
+
+    PDV datasetdpdv = InitDataSetPresentationDataValue(dataset, datasetlen);
+    PresentationDataValueItem datasetpdvitem = InitPresentationDataValueItem(1, datasetdpdv);
+    pDataTFPDU->presentationDataValueItemList.push_back(datasetpdvitem);
+
+    pDataTFPDU->headItam.pduLen = 0;
+    for (int i=0; i<pDataTFPDU->presentationDataValueItemList.size(); i++)
+    {
+        pDataTFPDU->headItam.pduLen += pDataTFPDU->presentationDataValueItemList[i].itemLen + 
+               sizeof(pDataTFPDU->presentationDataValueItemList[i].itemLen) + 
+               sizeof(pDataTFPDU->presentationDataValueItemList[i].presentationID);
+    }
+}
+
+PresentationDataValueItem PDataTF::InitPresentationDataValueItem(unsigned char presentationid, PDV pdv)
+{
+    PresentationDataValueItem presentationDataValueItem;
+
+    presentationDataValueItem.itemLen = pdv.len;
+    presentationDataValueItem.presentationID = presentationid;
+    
+    presentationDataValueItem.presentationDataValue = pdv.presentationDataValue;
+
+    return presentationDataValueItem;
+}
+
+PDV PDataTF::InitCommandPresentationDataValue(CDIMSE *command, int commandlen)
+{
+    PDV pdv;
+    PresentationDataValue presentationDataValue;
+
+    presentationDataValue.messageControlHeader = 0b00000011;
+    presentationDataValue.messageCommandOrDataSetFragment = command;
+
+    pdv.presentationDataValue = presentationDataValue;
+    // int groupLength = 0;
+    // char *lengthBuf = new char[command->groupLength.data.len];
+    
+    // // command tag is little implicit
+    // for(int i=0; i<command->groupLength.data.len; i++)
+    // {
+    //     // groupLength &= (command->groupLength.data.data[i] << (((command->groupLength.data.len - 1) -i) * 8));
+    //     lengthBuf[i] = command->groupLength.data.data[command->groupLength.data.len - 1 - i];
+    // }
+    // memcpy(&groupLength, lengthBuf, command->groupLength.data.len);
+    pdv.len = sizeof(presentationDataValue.messageControlHeader) + commandlen;
+    return pdv;
+}
+
+PDV PDataTF::InitDataSetPresentationDataValue(vector<DcmElement> *dataset, int datasetlen)
+{
+    PDV pdv;
+    PresentationDataValue presentationDataValue;
+    // cfind dataset just need one pdv
+    presentationDataValue.messageControlHeader = 0b00000010;
+    presentationDataValue.messageCommandOrDataSetFragment = dataset;
+
+    pdv.presentationDataValue = presentationDataValue;
+    pdv.len = sizeof(presentationDataValue.messageControlHeader) + datasetlen;
+    return pdv;
+}

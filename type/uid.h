@@ -21,4 +21,11 @@ const string  ImplicitVRLittleEndian = "1.2.840.10008.1.2";
 const string  ExplicitVRLittleEndian = "1.2.840.10008.1.2.1";
 const string  ExplicitVRBigEndian = "1.2.840.10008.1.2.2";
 
+
+enum CFindRoot 
+{
+    CFindPatientRoot = 1,
+    CFindStudyRoot = 2
+};
+
 #endif
