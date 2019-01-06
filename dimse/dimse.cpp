@@ -1,16 +1,18 @@
 #include "dimse.h"
 
-CDIMSE::CDIMSE() 
+CDIMSE::CDIMSE(string transfersyntax) 
 {
-    InitElementTag(&groupLength, 0x00000000);
-    InitElementTag(&affectedSOPClassUID, 0x00000002);
-    InitElementTag(&commandField, 0x00000100);
-    InitElementTag(&commandDataSetType, 0x00000800);
+    this->transfersyntax = transfersyntax;
+    InitElementTag(&groupLength, 0x0000, 0x0000);
+    InitElementTag(&affectedSOPClassUID, 0x0000, 0x0002);
+    InitElementTag(&commandField, 0x0000, 0x0100);
+    InitElementTag(&commandDataSetType, 0x0000, 0x0800);
 }
 
-void CDIMSE::InitElementTag(DcmElement *dcmelement, uint32_t tag)
+void CDIMSE::InitElementTag(DcmElement *dcmelement, uint16_t group, uint16_t element)
 {
-    memcpy(dcmelement->tag, &tag, sizeof(dcmelement->tag));
+    memcpy(dcmelement->tag, &group, sizeof(group));
+    memcpy(dcmelement->tag + sizeof(group), &element, sizeof(element));
     dcmelement->vr.len = 0;
     dcmelement->vr.data = NULL;
 }
@@ -52,14 +54,14 @@ void CDIMSE::InitElementData(DcmElement *dcmelement, int len, void *data)
     memcpy(dcmelement->data.data, data, dcmelement->data.len);
 }
 
-CDIMSERQ::CDIMSERQ()
+CDIMSERQ::CDIMSERQ(string transfersyntax) : CDIMSE(transfersyntax)
 {
-    InitElementTag(&messageID, 0x00000110);
-    InitElementTag(&priority, 0x00000700);
+    InitElementTag(&messageID, 0x0000, 0x0110);
+    InitElementTag(&priority, 0x0000, 0x0700);
 }
 
-CDIMSERSP::CDIMSERSP()
+CDIMSERSP::CDIMSERSP(string transfersyntax) : CDIMSE(transfersyntax)
 {
-    InitElementTag(&messageIDBeingRespondedTo, 0x00000120);
-    InitElementTag(&status, 0x00000900);
+    InitElementTag(&messageIDBeingRespondedTo, 0x0000, 0x0120);
+    InitElementTag(&status, 0x0000, 0x0900);
 }

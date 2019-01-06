@@ -23,14 +23,17 @@ void CFindeRQPDU::DUL_SendCFindRQ(int conn)
 {
     TcpSocket tcpSocket;
     tcpSocket.Send(conn, buffer, pdatatflen);
-
+    for(int i=0; i<pdatatflen; i++)
+    {
+        printf("%x,%d\n", buffer[i], i);
+    }
 }
 
 void CFindeRQPDU::DUL_GetCFindRQPDU()
 {
     DUL_GetBufferFromPoint(&(pdatatf->headItem.pduType), sizeof(pdatatf->headItem.pduType));
     DUL_GetBufferFromPoint(&(pdatatf->headItem.reserve), sizeof(pdatatf->headItem.reserve));
-    DUL_GetBufferFromPoint((const unsigned char*)&(pdatatf->headItem.pduLen), sizeof(pdatatf->headItem.pduLen));
+    DUL_GetBufferFromInt(pdatatf->headItem.pduLen, sizeof(pdatatf->headItem.pduLen));
 
     DUL_GetPresentationDataValueItem();
 }
@@ -39,9 +42,9 @@ void CFindeRQPDU::DUL_GetPresentationDataValueItem()
 {
     for(int i=0; i< pdatatf->presentationDataValueItemList.size(); i++)
     {
-        DUL_GetBufferFromPoint((const unsigned char *)&(pdatatf->presentationDataValueItemList[i].itemLen), sizeof(pdatatf->presentationDataValueItemList[i].itemLen));
+        DUL_GetBufferFromInt(pdatatf->presentationDataValueItemList[i].itemLen, sizeof(pdatatf->presentationDataValueItemList[i].itemLen));
         DUL_GetBufferFromPoint(&(pdatatf->presentationDataValueItemList[i].presentationID), sizeof(pdatatf->presentationDataValueItemList[i].presentationID));
-        DUL_GetPresentationDataValue(&(pdatatf->presentationDataValueItemList[i].presentationDataValue);
+        DUL_GetPresentationDataValue(&(pdatatf->presentationDataValueItemList[i].presentationDataValue));
     }
 }
 
@@ -60,7 +63,7 @@ void CFindeRQPDU::DUL_GetBuffFromDcmElement(DcmElement *dcmelement)
     DUL_GetBufferFromPoint(dcmelement->tag, sizeof(dcmelement->tag));
     DUL_GetBufferFromPoint(dcmelement->vr.data, dcmelement->vr.len);
     DUL_GetBufferFromPoint(dcmelement->datalen.data, dcmelement->datalen.len);
-    DUL_GetBufferFromPoint(dcmelement->data.data, sizeof(dcmelement->data.len));
+    DUL_GetBufferFromPoint(dcmelement->data.data, dcmelement->data.len);
 }
 
 void CFindeRQPDU::DUL_GetBufferFromPoint(const unsigned char *data, int len)

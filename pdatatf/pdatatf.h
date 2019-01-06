@@ -17,10 +17,10 @@ public:
     PDataTF();
     ~PDataTF();
 public:
-    PDataTFPDU *InitDefaultPDataTFPDU(CDIMSE *command, int commandlen, vector<DcmElement> dataset, int datasetlen, unsigned char presentationid);
+    PDataTFPDU *InitDefaultPDataTFPDU(vector<DcmElement> commandlist, int commandlen, vector<DcmElement> dataset, int datasetlen, unsigned char presentationid);
 private:
     PresentationDataValueItem InitPresentationDataValueItem(unsigned char presentationid, PDV pdv);
-    PDV InitCommandPresentationDataValue(CDIMSE *command, int commandlen);
+    PDV InitCommandPresentationDataValue(vector<DcmElement> commandlist, int commandlen);
     PDV InitDataSetPresentationDataValue(vector<DcmElement> dataset, int datasetlen);
 private:
     PDataTFPDU *pDataTFPDU;

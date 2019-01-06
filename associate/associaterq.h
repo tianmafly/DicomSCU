@@ -12,16 +12,16 @@ using namespace AssociateRQPDU_NameSpace;
 class AssociateRQ
 {
 public:
-    AssociateRQ(AssociateRQPDU *associaterqpdu, string callingae, string calledae);
+    AssociateRQ(AssociateRQPDU *associaterqpdu, string callingae, string calledae, string abstractsyntax);
     ~AssociateRQ();
 public:
     int SendAssociateRQ(string ip, int port);
     
 private:
-    void InitDefaultAssociateRQPDU(AssociateRQPDU *associaterqpdu);
-    void InitAssociateRQPDU(AssociateRQPDU *associaterqpdu, string callingae, string calledae);
+    void InitDefaultAssociateRQPDU(AssociateRQPDU *associaterqpdu, string abstractsyntax);
+    void InitAssociateRQPDU(AssociateRQPDU *associaterqpdu, string callingae, string calledae, string abstractsyntax);
     ApplicationContexItem InitApplicationContextItem();
-    PresentationContextItem InitPresentationContextItem();
+    PresentationContextItem InitPresentationContextItem(string abstractsyntax);
     UserInfoItem InitUserInfoItem(uint32_t maximumLength);
 
     SyntaxItem InitAbstractSyntax(string abstractSyntax);

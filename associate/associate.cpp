@@ -5,9 +5,9 @@
 #include "associaterq.h"
 #include "associateac.h"
 
-Associate::Associate(/* args */)
+Associate::Associate()
 {
-    conn = -1;
+    this->conn = -1;
 }
 
 Associate::~Associate()
@@ -15,9 +15,9 @@ Associate::~Associate()
 
 }
 
-void Associate::SendAssociateRQ(AssociateRQPDU_NameSpace::AssociateRQPDU *associaterqpdu, AssociateParas associateparas)
+void Associate::SendAssociateRQ(AssociateRQPDU_NameSpace::AssociateRQPDU *associaterqpdu, AssociateParas associateparas, string abstractsyntax)
 {
-    AssociateRQ associateRQ(associaterqpdu, associateparas.CallingAE, associateparas.CalledAE);
+    AssociateRQ associateRQ(associaterqpdu, associateparas.CallingAE, associateparas.CalledAE, abstractsyntax);
     conn = associateRQ.SendAssociateRQ(associateparas.SCPIP, associateparas.SCPPort);
 }
 
@@ -25,4 +25,9 @@ void Associate::ReceiveAssociateAC(AssociateACPDU_NameSpace::AssociateACPDU *ass
 {
     AssociateAC associateAC(associateacpdu);
     associateAC.ReceiveAssociateAC(conn);
+}
+
+int Associate::GetSocketConn()
+{
+    return this->conn;
 }

@@ -2,11 +2,20 @@
 #include "../../type/uid.h"
 #include "../../pdatatf/pdatatf.h"
 #include <stdint.h>
-#include "../dul/dulcfindrq.h"
+#include "../../dul/dulcfindrq.h"
 
-CFindRQ::CFindRQ()
+CFindRQDIMSE::CFindRQDIMSE(string transfersyntax) : CDIMSERQ(transfersyntax)
 {
-    cFindRQDIMSE = new CFindRQDIMSE();
+
+}
+
+CFindRQ::CFindRQ(int conn, string transfersyntax, unsigned char presentationid)
+{
+    this->conn = conn;
+    this->transfersyntax = transfersyntax;
+    this->presentationid = presentationid;
+
+    cFindRQDIMSE = new CFindRQDIMSE(transfersyntax);
     commandlen = 0;
     datasetlen = 0;
 }
@@ -17,12 +26,13 @@ CFindRQ::~CFindRQ()
     cFindRQDIMSE = NULL;
 }
 
-void CFindRQ::SendCFindRQPDU(vector<DcmElement> querykeylist, CFindRoot cfindroot, unsigned char presentationid, int conn)
+void CFindRQ::SendCFindRQPDU(vector<DcmElement> querykeylist, CFindRoot cfindroot)
 {
     InitCFindeRQMessage(querykeylist, cfindroot);
+    vector<DcmElement> commandlist = TransferCommandToVector();
 
     PDataTF pDataTF;
-    PDataTFPDU * pDataTFPDU = pDataTF.InitDefaultPDataTFPDU(this->cFindRQDIMSE, this->commandlen, querykeylist, this->datasetlen, presentationid);
+    PDataTFPDU * pDataTFPDU = pDataTF.InitDefaultPDataTFPDU(commandlist, this->commandlen, querykeylist, this->datasetlen, presentationid);
 
     CFindeRQPDU cFindRQPDU(pDataTFPDU);
     cFindRQPDU.DUL_SendCFindRQ(conn);
@@ -73,4 +83,17 @@ void CFindRQ::InitCFindeRQDataSet(vector<DcmElement> querykeylist)
 int CFindRQ::GetDcmElementLen(DcmElement dcmelement)
 {
     return sizeof(dcmelement.tag) + dcmelement.vr.len + dcmelement.datalen.len + dcmelement.data.len;
+}
+
+vector<DcmElement> CFindRQ::TransferCommandToVector()
+{
+    vector<DcmElement> commandlist;
+    commandlist.push_back(cFindRQDIMSE->groupLength);
+    commandlist.push_back(cFindRQDIMSE->affectedSOPClassUID);
+    commandlist.push_back(cFindRQDIMSE->commandField);
+    commandlist.push_back(((CFindRQDIMSE*)cFindRQDIMSE)->messageID);
+    commandlist.push_back(((CFindRQDIMSE*)cFindRQDIMSE)->priority);
+    commandlist.push_back(cFindRQDIMSE->commandDataSetType);
+    
+    return commandlist;
 }

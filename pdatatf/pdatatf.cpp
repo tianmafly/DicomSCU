@@ -13,12 +13,12 @@ PDataTF::~PDataTF()
     pDataTFPDU = NULL;
 }
 
-PDataTFPDU *PDataTF::InitDefaultPDataTFPDU(CDIMSE *command, int commandlen, vector<DcmElement> dataset, int datasetlen, unsigned char presentationid)
+PDataTFPDU *PDataTF::InitDefaultPDataTFPDU(vector<DcmElement> commandlist, int commandlen, vector<DcmElement> dataset, int datasetlen, unsigned char presentationid)
 {
     pDataTFPDU->headItem.pduType = 0x04;
     pDataTFPDU->headItem.reserve = 0x00;
 
-    PDV commandpdv = InitCommandPresentationDataValue(command, commandlen);
+    PDV commandpdv = InitCommandPresentationDataValue(commandlist, commandlen);
     PresentationDataValueItem commandpdvitem = InitPresentationDataValueItem(1, commandpdv);
     pDataTFPDU->presentationDataValueItemList.push_back(commandpdvitem);
 
@@ -49,22 +49,8 @@ PresentationDataValueItem PDataTF::InitPresentationDataValueItem(unsigned char p
     return presentationDataValueItem;
 }
 
-PDV PDataTF::InitCommandPresentationDataValue(CDIMSE *command, int commandlen)
+PDV PDataTF::InitCommandPresentationDataValue(vector<DcmElement> commandlist, int commandlen)
 {
-    vector<DcmElement> commandlist;
-    commandlist.push_back(command->groupLength);
-    commandlist.push_back(command->affectedSOPClassUID);
-    commandlist.push_back(command->commandField);
-    commandlist.push_back(command->commandDataSetType);
-    
-    if(memcmp(command->affectedSOPClassUID.data.data, &CFindRQ_CommandType, sizeof(CFindRQ_CommandType)) == 0)
-    {
-        commandlist.push_back(((CFindRQDIMSE*)command)->messageID);
-        commandlist.push_back(((CFindRQDIMSE*)command)->priority);
-    }
-    else if(memcmp(command->affectedSOPClassUID.data.data, &CFindRSP_CommandType, sizeof(CFindRSP_CommandType)) == 0)
-    {}
-
     PDV pdv;
     PresentationDataValue presentationDataValue;
 

@@ -1,4 +1,4 @@
 pud.o: pud.h pdu.cpp
-	g++ -g -c pdu.cpp -o pdu.o
+	g++ -g -c pdu.cpp
 clean:
 	rm *.o

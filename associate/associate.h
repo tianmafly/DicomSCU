@@ -17,15 +17,14 @@ struct AssociateParas
 
 class Associate
 {
-  private:
-    /* data */
   public:
-    Associate(/* args */);
+    Associate();
     ~Associate();
 
   public:
-    void SendAssociateRQ(AssociateRQPDU_NameSpace::AssociateRQPDU *associaterqpdu, AssociateParas associateparas);
+    void SendAssociateRQ(AssociateRQPDU_NameSpace::AssociateRQPDU *associaterqpdu, AssociateParas associateparas, string abstractsyntax);
     void ReceiveAssociateAC(AssociateACPDU_NameSpace::AssociateACPDU *associateacpdu);
+    int GetSocketConn();
   private:
     int conn;
   

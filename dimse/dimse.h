@@ -4,6 +4,8 @@
 #include <string.h>
 #include<stdio.h>
 #include <stdint.h>
+#include <string>
+using namespace std;
 
 
 class ElementData
@@ -25,10 +27,10 @@ public:
 class CDIMSE
 {
 public:
-    CDIMSE();
+    CDIMSE(string transfersyntax);
     
 public:
-    void InitElementTag(DcmElement *dcmelement, uint32_t tag);
+    void InitElementTag(DcmElement *dcmelement, uint16_t group, uint16_t element);
     void InitElementData(DcmElement *dcmelement, uint16_t len, const unsigned char * data);
     void InitElementData(DcmElement *dcmelement, uint32_t data);
     void InitElementData(DcmElement *dcmelement, uint16_t data);
@@ -40,12 +42,14 @@ public:
     DcmElement  affectedSOPClassUID;
     DcmElement  commandField;
     DcmElement  commandDataSetType;
+private:
+    string transfersyntax;
 };
 
 class CDIMSERQ : public CDIMSE
 {
 public:
-    CDIMSERQ();
+    CDIMSERQ(string transfersyntax);
 public:
     DcmElement  messageID;
     DcmElement  priority;
@@ -54,7 +58,7 @@ public:
 struct CDIMSERSP : public CDIMSE
 {
 public:
-    CDIMSERSP();
+    CDIMSERSP(string transfersyntax);
 public:
     DcmElement  messageIDBeingRespondedTo;
     DcmElement  status;

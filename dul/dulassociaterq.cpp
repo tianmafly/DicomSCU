@@ -32,7 +32,9 @@ void AssociateRQDUL::DUL_GetAssociateRQPUDMemory(AssociateRQPDU *associaterqpdu)
 {
     int32_t associaterqpudheadlen = sizeof(associaterqpdu->pduHead.PduType) + sizeof(associaterqpdu->pduHead.Reserved) + sizeof(associaterqpdu->pduHead.PduLen);
     int32_t associaterqpudlen = associaterqpudheadlen + associaterqpdu->pduHead.PduLen;
-    this->associatedata.len = associaterqpudlen;
+    associatedata.len = associaterqpudlen;
+    associatedata.buffer = new unsigned char[associatedata.len];
+    memset(associatedata.buffer, 0, associatedata.len);
 
     //pdu head
     DUL_GetBufferFromPoint(&(associaterqpdu->pduHead.PduType), sizeof(associaterqpdu->pduHead.PduType));

@@ -3,12 +3,12 @@
 #include "../type/uid.h"
 #include "../dul/dulassociaterq.h"
 
-AssociateRQ::AssociateRQ(AssociateRQPDU *associaterqpdu, string callingae, string calledae)
+AssociateRQ::AssociateRQ(AssociateRQPDU *associaterqpdu, string callingae, string calledae, string abstractsyntax)
 {
     //char ItemType; char Reserved; uint16_t ItemLen;
     this->itemheadlength = sizeof(ItemHead::ItemType) + sizeof(ItemHead::Reserved) + sizeof(ItemHead::ItemLen);
 
-    InitAssociateRQPDU(associaterqpdu, callingae, calledae);
+    InitAssociateRQPDU(associaterqpdu, callingae, calledae, abstractsyntax);
     this->associateRQPDU = associaterqpdu;
 }
 
@@ -24,9 +24,9 @@ int AssociateRQ::SendAssociateRQ(string ip, int port)
     return conn;
 }
 
-void AssociateRQ::InitAssociateRQPDU(AssociateRQPDU *associaterqpdu, string callingae, string calledae)
+void AssociateRQ::InitAssociateRQPDU(AssociateRQPDU *associaterqpdu, string callingae, string calledae, string abstractsyntax)
 {
-    InitDefaultAssociateRQPDU(associaterqpdu);
+    InitDefaultAssociateRQPDU(associaterqpdu, abstractsyntax);
 
     //leading and trailing spaces (20H) being non-significant(part 8, 9.3.2)
     memset(associaterqpdu->CallingAE, 0x20, sizeof(associaterqpdu->CallingAE));
@@ -35,7 +35,7 @@ void AssociateRQ::InitAssociateRQPDU(AssociateRQPDU *associaterqpdu, string call
     memcpy(associaterqpdu->CalledAE, calledae.c_str(), calledae.size());
 }
 
-void AssociateRQ::InitDefaultAssociateRQPDU(AssociateRQPDU *associaterqpdu)
+void AssociateRQ::InitDefaultAssociateRQPDU(AssociateRQPDU *associaterqpdu, string abstractsyntax)
 {
     //init PUD Head
     associaterqpdu->pduHead.PduType = 0x01;
@@ -49,7 +49,7 @@ void AssociateRQ::InitDefaultAssociateRQPDU(AssociateRQPDU *associaterqpdu)
     memset(associaterqpdu->Reserved2, 0, sizeof(associaterqpdu->Reserved2));
 
     associaterqpdu->applicationContexItem = InitApplicationContextItem();
-    associaterqpdu->presentationContextItemlist.push_back(InitPresentationContextItem());
+    associaterqpdu->presentationContextItemlist.push_back(InitPresentationContextItem(abstractsyntax));
     associaterqpdu->userInfoItem = InitUserInfoItem(10000);
 
     uint16_t applicationcontexitemlen = associaterqpdu->applicationContexItem.itemHead.ItemLen + itemheadlength;
@@ -85,7 +85,7 @@ ApplicationContexItem AssociateRQ::InitApplicationContextItem()
     return applicationcontexitem;
 }
 
-PresentationContextItem AssociateRQ::InitPresentationContextItem()
+PresentationContextItem AssociateRQ::InitPresentationContextItem(string abstractsyntax)
 {
     //可变条目
     PresentationContextItem presentationcontextitem;
@@ -98,7 +98,7 @@ PresentationContextItem AssociateRQ::InitPresentationContextItem()
     memset(presentationcontextitem.Reserved, 0, sizeof(presentationcontextitem.Reserved));
     
     NegotiationSyntaxItem negotiationsyntaxitem;
-    negotiationsyntaxitem.abstractSyntax = InitAbstractSyntax(StudyRoot_QueryRetrieveInformationModel_FIND);
+    negotiationsyntaxitem.abstractSyntax = InitAbstractSyntax(abstractsyntax);
     negotiationsyntaxitem.transferSyntaxlist.push_back(InitTransferSyntax(ImplicitVRLittleEndian));
     presentationcontextitem.negotiationSyntaxItem = negotiationsyntaxitem;
 

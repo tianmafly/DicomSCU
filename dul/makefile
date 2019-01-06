@@ -1,8 +1,10 @@
-all:dulassociaterq.o dulassociateac.o
+all:dulassociaterq.o dulassociateac.o dulcfindrq.o
 
 dulassociaterq.o: dulassociaterq.h dulassociaterq.cpp
-	g++ -g -c dulassociaterq.cpp -o dulassociaterq.o
+	g++ -g -c dulassociaterq.cpp
 dulassociateac.o: dulassociateac.h dulassociateac.cpp
-	g++ -g -c dulassociateac.cpp -o dulassociateac.o
+	g++ -g -c dulassociateac.cpp
+dulcfindrq.o: dulcfindrq.h dulcfindrq.cpp
+	g++ -g -c dulcfindrq.cpp
 clean:
 	rm *.o
