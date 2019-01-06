@@ -29,8 +29,12 @@ public:
     
 public:
     void InitElementTag(DcmElement *dcmelement, uint32_t tag);
-    void InitElementData(DcmElement *dcmelement, int len, const unsigned char * data);
-    void InitElementData(DcmElement *dcmelement, int len, uint32_t data);
+    void InitElementData(DcmElement *dcmelement, uint16_t len, const unsigned char * data);
+    void InitElementData(DcmElement *dcmelement, uint32_t data);
+    void InitElementData(DcmElement *dcmelement, uint16_t data);
+    void InitElementData(DcmElement *dcmelement, uint8_t data);
+private:
+    void InitElementData(DcmElement *dcmelement, int len, void *data);
 public:
     DcmElement  groupLength;
     DcmElement  affectedSOPClassUID;

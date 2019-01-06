@@ -25,14 +25,14 @@ public:
     
 private:
     void InitCFindeRQMessage(vector<DcmElement> querykeylist, CFindRoot cfindroot);
-    int InitCFindeRQCommand(CFindRoot cfindroot);
-    int InitCFindeRQDataSet(vector<DcmElement> querykeylist);
+    void InitCFindeRQCommand(CFindRoot cfindroot);
+    void InitCFindeRQDataSet(vector<DcmElement> querykeylist);
     int GetDcmElementLen(DcmElement dcmelement);
 private:
     CFindRQDIMSE *cFindRQDIMSE;
     vector<DcmElement> queryKeyList;
-    int commandlen;
-    int datasetlen;
+    uint16_t commandlen;
+    uint16_t datasetlen;
 };
 
 

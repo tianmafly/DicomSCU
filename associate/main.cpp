@@ -4,7 +4,12 @@
 #include "../dimse/cfind/cfindrq.h"
 #include "../type/uid.h"
 #include "../dimse/dimse.h"
-int main()
+
+
+
+
+
+void associate()
 {
     AssociateRQPDU_NameSpace::AssociateRQPDU *associaterqpdu = new AssociateRQPDU_NameSpace::AssociateRQPDU();
     AssociateParas associateParas;
@@ -18,26 +23,36 @@ int main()
     Associate associate;
     associate.SendAssociateRQ(associaterqpdu, associateParas);
     associate.ReceiveAssociateAC(associateacpdu);
-    
+}
+
+void cfind()
+{
     vector<DcmElement> querykeylist;
     DcmElement queryRetrieveLevel;
 
-    int tag = 0x00000000;
+    int tag = 0x00080052;
     string value = "STUDY";
     CDIMSE cDIMSE;
-    memcpy(queryRetrieveLevel.tag, &tag, sizeof(queryRetrieveLevel.tag));
+    cDIMSE.InitElementTag(&queryRetrieveLevel, tag);
     cDIMSE.InitElementData(&queryRetrieveLevel, value.size(), (unsigned char*)value.c_str());
 
     DcmElement studyID;
-    tag = 0x00000000;
-    uint32_t value1 = 123;
-    memcpy(studyID.tag, &tag, sizeof(studyID.tag));
-    cDIMSE.InitElementData(&studyID, sizeof(value1), value1);
+    tag = 0x00200010;
+    string value1 = "123";
+    cDIMSE.InitElementTag(&studyID, tag);
+    cDIMSE.InitElementData(&studyID, value1.size(), (unsigned char*)value1.c_str());
 
     querykeylist.push_back(queryRetrieveLevel);
     querykeylist.push_back(studyID);
 
     CFindRQ cFindRQ;
     cFindRQ.SendCFindRQPDU(querykeylist, CFindStudyRoot, 1);
+}
+
+int main()
+{
+    
+    cfind();
+   
     int x = 312;
 }

@@ -15,7 +15,7 @@ void CDIMSE::InitElementTag(DcmElement *dcmelement, uint32_t tag)
     dcmelement->vr.data = NULL;
 }
 
-void CDIMSE::InitElementData(DcmElement *dcmelement, int len, const unsigned char * data)
+void CDIMSE::InitElementData(DcmElement *dcmelement, uint16_t len, const unsigned char * data)
 {
     dcmelement->datalen.len = 2;
     dcmelement->datalen.data = new unsigned char[dcmelement->datalen.len];
@@ -26,7 +26,22 @@ void CDIMSE::InitElementData(DcmElement *dcmelement, int len, const unsigned cha
     memcpy(dcmelement->data.data, data, dcmelement->data.len);
 }
 
-void CDIMSE::InitElementData(DcmElement *dcmelement, int len, uint32_t data)
+void CDIMSE::InitElementData(DcmElement *dcmelement, uint32_t data)
+{
+    InitElementData(dcmelement, sizeof(data), &data);
+}
+
+void CDIMSE::InitElementData(DcmElement *dcmelement, uint16_t data)
+{
+    InitElementData(dcmelement, sizeof(data), &data);
+}
+
+void CDIMSE::InitElementData(DcmElement *dcmelement, uint8_t data)
+{
+    InitElementData(dcmelement, sizeof(data), &data);
+}
+
+void CDIMSE::InitElementData(DcmElement *dcmelement, int len, void *data)
 {
     dcmelement->datalen.len = 2;
     dcmelement->datalen.data = new unsigned char[dcmelement->datalen.len];
@@ -34,7 +49,7 @@ void CDIMSE::InitElementData(DcmElement *dcmelement, int len, uint32_t data)
 
     dcmelement->data.len = len;
     dcmelement->data.data = new unsigned char[dcmelement->data.len];
-    memcpy(dcmelement->data.data, &data, dcmelement->data.len);
+    memcpy(dcmelement->data.data, data, dcmelement->data.len);
 }
 
 CDIMSERQ::CDIMSERQ()
