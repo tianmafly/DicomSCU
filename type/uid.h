@@ -28,4 +28,15 @@ enum CFindRoot
     CFindStudyRoot = 2
 };
 
+uint16_t CFindRQ_CommandType = 0x0020;
+uint16_t CFindRSP_CommandType = 0x8020;
+uint16_t CCancelFindRQ_CommandType = 0x0FFF;
+
+uint16_t CGetRQ_CommandType = 0x0010;
+uint16_t CGetRSP_CommandType = 0x8010;
+uint16_t CCancelGetRQ_CommandType = 0x0FFF;
+
+uint16_t CMoveRQ_CommandType = 0x0021;
+uint16_t CMoveRSP_CommandType = 0x8021;
+uint16_t CCancelMoveRQ_CommandType = 0x0FFF;
 #endif

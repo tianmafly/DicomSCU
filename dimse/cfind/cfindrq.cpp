@@ -2,8 +2,9 @@
 #include "../../type/uid.h"
 #include "../../pdatatf/pdatatf.h"
 #include <stdint.h>
+#include "../dul/dulcfindrq.h"
 
-CFindRQ::CFindRQ(/* args */)
+CFindRQ::CFindRQ()
 {
     cFindRQDIMSE = new CFindRQDIMSE();
     commandlen = 0;
@@ -16,12 +17,15 @@ CFindRQ::~CFindRQ()
     cFindRQDIMSE = NULL;
 }
 
-void CFindRQ::SendCFindRQPDU(vector<DcmElement> querykeylist, CFindRoot cfindroot, unsigned char presentationid)
+void CFindRQ::SendCFindRQPDU(vector<DcmElement> querykeylist, CFindRoot cfindroot, unsigned char presentationid, int conn)
 {
     InitCFindeRQMessage(querykeylist, cfindroot);
 
     PDataTF pDataTF;
-    pDataTF.InitDefaultPDataTFPDU(this->cFindRQDIMSE, this->commandlen, &querykeylist, this->datasetlen, presentationid);
+    PDataTFPDU * pDataTFPDU = pDataTF.InitDefaultPDataTFPDU(this->cFindRQDIMSE, this->commandlen, querykeylist, this->datasetlen, presentationid);
+
+    CFindeRQPDU cFindRQPDU(pDataTFPDU);
+    cFindRQPDU.DUL_SendCFindRQ(conn);
 }
 
 void CFindRQ::InitCFindeRQMessage(vector<DcmElement> querykeylist, CFindRoot cfindroot)
@@ -43,7 +47,7 @@ void CFindRQ::InitCFindeRQCommand(CFindRoot cfindroot)
     // groupLength to count command length
     cFindRQDIMSE->InitElementData(&(cFindRQDIMSE->groupLength), (uint16_t)0x0000);
     cFindRQDIMSE->InitElementData(&(cFindRQDIMSE->affectedSOPClassUID), cFindRoot.size(), (unsigned char*)cFindRoot.c_str());
-    cFindRQDIMSE->InitElementData(&(cFindRQDIMSE->commandField), (uint16_t)0x0020);
+    cFindRQDIMSE->InitElementData(&(cFindRQDIMSE->commandField), CFindRQ_CommandType);
     cFindRQDIMSE->InitElementData(&(cFindRQDIMSE->messageID), (uint8_t)0x01);
     cFindRQDIMSE->InitElementData(&(cFindRQDIMSE->priority), (uint16_t)0x0000);
     cFindRQDIMSE->InitElementData(&(cFindRQDIMSE->commandDataSetType), (uint16_t)0x1111);

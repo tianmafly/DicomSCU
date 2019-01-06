@@ -16,7 +16,7 @@ public:
 class DcmElement
 {
 public:
-	char tag[4];
+	unsigned char tag[4];
 	ElementData vr;
 	ElementData datalen;
 	ElementData data;

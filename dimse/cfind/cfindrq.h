@@ -21,7 +21,7 @@ public:
     CFindRQ();
     ~CFindRQ();
 public:
-    void SendCFindRQPDU(vector<DcmElement> querykeylist, CFindRoot cfindroot, unsigned char presentationid);
+    void SendCFindRQPDU(vector<DcmElement> querykeylist, CFindRoot cfindroot, unsigned char presentationid, int conn);
     
 private:
     void InitCFindeRQMessage(vector<DcmElement> querykeylist, CFindRoot cfindroot);

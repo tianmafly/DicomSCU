@@ -25,7 +25,7 @@ void associate()
     associate.ReceiveAssociateAC(associateacpdu);
 }
 
-void cfind()
+void cfind(int conn)
 {
     vector<DcmElement> querykeylist;
     DcmElement queryRetrieveLevel;
@@ -46,13 +46,13 @@ void cfind()
     querykeylist.push_back(studyID);
 
     CFindRQ cFindRQ;
-    cFindRQ.SendCFindRQPDU(querykeylist, CFindStudyRoot, 1);
+    cFindRQ.SendCFindRQPDU(querykeylist, CFindStudyRoot, 1, conn);
 }
 
 int main()
 {
     
-    cfind();
+    cfind(1);
    
     int x = 312;
 }

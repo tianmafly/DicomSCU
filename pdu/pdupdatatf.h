@@ -20,7 +20,7 @@ namespace PDUPDataTF_namespace
     struct PresentationDataValue
     {
         unsigned char messageControlHeader;
-        void *messageCommandOrDataSetFragment;
+        vector<DcmElement> messageCommandOrDataSetFragment;
     };
 
     // PDV
@@ -36,7 +36,7 @@ namespace PDUPDataTF_namespace
 
     struct PDataTFPDU
     {
-        HeadItem headItam;
+        HeadItem headItem;
 
         vector<PresentationDataValueItem> presentationDataValueItemList;
 
