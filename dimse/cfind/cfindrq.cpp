@@ -43,7 +43,7 @@ void CFindRQ::InitCFindeRQMessage(vector<DcmElement> querykeylist, CFindRoot cfi
     InitCFindeRQCommand(cfindroot);
     InitCFindeRQDataSet(querykeylist);
 
-    cFindRQDIMSE->InitElementData(&(cFindRQDIMSE->groupLength), (uint16_t)(this->commandlen + this->datasetlen));
+    
 }
 
 void CFindRQ::InitCFindeRQCommand(CFindRoot cfindroot)
@@ -54,20 +54,20 @@ void CFindRQ::InitCFindeRQCommand(CFindRoot cfindroot)
     else if (cfindroot == CFindStudyRoot)
         cFindRoot = StudyRoot_QueryRetrieveInformationModel_FIND;
     
-    // groupLength to count command length
-    cFindRQDIMSE->InitElementData(&(cFindRQDIMSE->groupLength), (uint16_t)0x0000);
     cFindRQDIMSE->InitElementData(&(cFindRQDIMSE->affectedSOPClassUID), cFindRoot.size(), (unsigned char*)cFindRoot.c_str());
     cFindRQDIMSE->InitElementData(&(cFindRQDIMSE->commandField), CFindRQ_CommandType);
     cFindRQDIMSE->InitElementData(&(cFindRQDIMSE->messageID), (uint8_t)0x01);
     cFindRQDIMSE->InitElementData(&(cFindRQDIMSE->priority), (uint16_t)0x0000);
     cFindRQDIMSE->InitElementData(&(cFindRQDIMSE->commandDataSetType), (uint16_t)0x1111);
 
-    commandlen = GetDcmElementLen(cFindRQDIMSE->groupLength) + 
-                 GetDcmElementLen(cFindRQDIMSE->affectedSOPClassUID) + 
-                 GetDcmElementLen(cFindRQDIMSE->commandField) + 
-                 GetDcmElementLen(cFindRQDIMSE->messageID) + 
-                 GetDcmElementLen(cFindRQDIMSE->priority) + 
-                 GetDcmElementLen(cFindRQDIMSE->commandDataSetType);
+    uint16_t grouplen = GetDcmElementLen(cFindRQDIMSE->affectedSOPClassUID) + 
+                        GetDcmElementLen(cFindRQDIMSE->commandField) + 
+                        GetDcmElementLen(cFindRQDIMSE->messageID) + 
+                        GetDcmElementLen(cFindRQDIMSE->priority) + 
+                        GetDcmElementLen(cFindRQDIMSE->commandDataSetType);
+    cFindRQDIMSE->InitElementData(&(cFindRQDIMSE->groupLength), grouplen);
+
+    commandlen = GetDcmElementLen(cFindRQDIMSE->groupLength) + grouplen;
 }
 
 void CFindRQ::InitCFindeRQDataSet(vector<DcmElement> querykeylist)

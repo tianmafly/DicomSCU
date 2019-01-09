@@ -1,4 +1,7 @@
 #include "dimse.h"
+#include "../type/uid.h"
+
+
 
 CDIMSE::CDIMSE(string transfersyntax) 
 {
@@ -17,9 +20,10 @@ void CDIMSE::InitElementTag(DcmElement *dcmelement, uint16_t group, uint16_t ele
     dcmelement->vr.data = NULL;
 }
 
-void CDIMSE::InitElementData(DcmElement *dcmelement, uint16_t len, const unsigned char * data)
+void CDIMSE::InitElementData(DcmElement *dcmelement, uint32_t len, const unsigned char * data)
 {
-    dcmelement->datalen.len = 2;
+    // implicit elementlen is 4 bytes
+    dcmelement->datalen.len = ImplicitDataElementValueLength;
     dcmelement->datalen.data = new unsigned char[dcmelement->datalen.len];
     memcpy(dcmelement->datalen.data, &len, dcmelement->datalen.len);
     
@@ -43,9 +47,9 @@ void CDIMSE::InitElementData(DcmElement *dcmelement, uint8_t data)
     InitElementData(dcmelement, sizeof(data), &data);
 }
 
-void CDIMSE::InitElementData(DcmElement *dcmelement, int len, void *data)
+void CDIMSE::InitElementData(DcmElement *dcmelement, uint32_t len, void *data)
 {
-    dcmelement->datalen.len = 2;
+    dcmelement->datalen.len = ImplicitDataElementValueLength;
     dcmelement->datalen.data = new unsigned char[dcmelement->datalen.len];
     memcpy(dcmelement->datalen.data, &len, dcmelement->datalen.len);
 

@@ -30,8 +30,7 @@ PDataTFPDU *PDataTF::InitDefaultPDataTFPDU(vector<DcmElement> commandlist, int c
     for (int i=0; i<pDataTFPDU->presentationDataValueItemList.size(); i++)
     {
         pDataTFPDU->headItem.pduLen += pDataTFPDU->presentationDataValueItemList[i].itemLen + 
-               sizeof(pDataTFPDU->presentationDataValueItemList[i].itemLen) + 
-               sizeof(pDataTFPDU->presentationDataValueItemList[i].presentationID);
+               sizeof(pDataTFPDU->presentationDataValueItemList[i].itemLen);
     }
 
     return pDataTFPDU;
@@ -41,7 +40,7 @@ PresentationDataValueItem PDataTF::InitPresentationDataValueItem(unsigned char p
 {
     PresentationDataValueItem presentationDataValueItem;
 
-    presentationDataValueItem.itemLen = pdv.len;
+    presentationDataValueItem.itemLen = sizeof(presentationDataValueItem.presentationID) + pdv.len;
     presentationDataValueItem.presentationID = presentationid;
     
     presentationDataValueItem.presentationDataValue = pdv.presentationDataValue;

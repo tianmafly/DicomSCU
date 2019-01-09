@@ -39,4 +39,9 @@ static const uint16_t CCancelGetRQ_CommandType = 0x0FFF;
 static const uint16_t CMoveRQ_CommandType = 0x0021;
 static const uint16_t CMoveRSP_CommandType = 0x8021;
 static const uint16_t CCancelMoveRQ_CommandType = 0x0FFF;
+
+
+static const unsigned char ImplicitDataElementValueLength = 4;
+static const unsigned char EmplicitDataElementValueLength = 2;
+static const unsigned char EmplicitDataElementOBValueLength = 4;
 #endif

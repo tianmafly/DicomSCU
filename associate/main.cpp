@@ -88,8 +88,11 @@ int main()
     for(int i=0; i<associatedsyntaxlist.size(); i++)
     {
         if(associatedsyntaxlist[i].AbstractSyntax == AbstractSyntax)
+        {
             cfind(conn, associatedsyntaxlist[i].TransferSyntax, associatedsyntaxlist[i].PresentationID);
             break;
+        }
+            
     }
     
     
