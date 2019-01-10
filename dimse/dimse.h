@@ -6,7 +6,11 @@
 #include <stdint.h>
 #include <string>
 using namespace std;
-
+/*
+P-DATA-PUD和Associate一样是大端传输.服务端截取的内存,直接转换为整数,所以是按照大端来解析
+DIMSE是0000组,是隐式小端传输
+Identitor是从0x0008组开始,要按照协商的transfer来传输
+*/
 
 class ElementData
 {
