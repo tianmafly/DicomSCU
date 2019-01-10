@@ -1,5 +1,5 @@
 #include "dimse.h"
-#include "../type/uid.h"
+#include "../../type/uid.h"
 
 
 

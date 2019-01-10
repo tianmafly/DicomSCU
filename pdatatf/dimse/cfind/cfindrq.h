@@ -4,7 +4,7 @@
 
 #include "../dimse.h"
 #include <vector>
-#include "../../type/uid.h"
+#include "../../../type/uid.h"
 
 using namespace std;
 

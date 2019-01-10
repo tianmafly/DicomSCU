@@ -1,8 +1,7 @@
 #include "cfindrq.h"
-#include "../../type/uid.h"
-#include "../../pdatatf/pdatatf.h"
+#include "../../../pdatatf/pdatatf.h"
 #include <stdint.h>
-#include "../../dul/dulcfindrq.h"
+#include "../../../dul/dulcfindrq.h"
 
 CFindRQDIMSE::CFindRQDIMSE(string transfersyntax) : CDIMSERQ(transfersyntax)
 {
@@ -34,8 +33,8 @@ void CFindRQ::SendCFindRQPDU(vector<DcmElement> querykeylist, CFindRoot cfindroo
     PDataTF pDataTF;
     PDataTFPDU * pDataTFPDU = pDataTF.InitDefaultPDataTFPDU(commandlist, this->commandlen, querykeylist, this->datasetlen, presentationid);
 
-    CFindeRQPDU cFindRQPDU(pDataTFPDU);
-    cFindRQPDU.DUL_SendCFindRQ(conn);
+    CFindeRQDUL cFindRQDUL(pDataTFPDU);
+    cFindRQDUL.DUL_SendCFindRQ(conn);
 }
 
 void CFindRQ::InitCFindeRQMessage(vector<DcmElement> querykeylist, CFindRoot cfindroot)

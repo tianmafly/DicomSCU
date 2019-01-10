@@ -1,9 +1,9 @@
 #include "associate.h"
 #include "../pdu/pduassociaterq.h"
 #include "../pdu/pduassociateac.h"
-#include "../dimse/cfind/cfindrq.h"
+#include "../pdatatf/dimse/cfind/cfindrq.h"
 #include "../type/uid.h"
-#include "../dimse/dimse.h"
+#include "../pdatatf/dimse/dimse.h"
 #include "../pdu/pduassociaterq.h"
 
 struct AssociatedSyntax

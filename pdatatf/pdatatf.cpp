@@ -1,7 +1,7 @@
 #include "pdatatf.h"
 #include <stdio.h>
 #include "../type/uid.h"
-#include "../dimse/cfind/cfindrq.h"
+#include "dimse/cfind/cfindrq.h"
 PDataTF::PDataTF(/* args */)
 {
     pDataTFPDU = new PDataTFPDU();

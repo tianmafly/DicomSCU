@@ -3,20 +3,20 @@
 #include "../pdu/pdupdatatf.h"
 using namespace PDUPDataTF_namespace;
 
-class CFindeRQPDU
+class CFindeRQDUL
 {
 private:
     
 public:
-    CFindeRQPDU(PDataTFPDU *pdatatf);
-    ~CFindeRQPDU();
+    CFindeRQDUL(PDataTFPDU *pdatatf);
+    ~CFindeRQDUL();
 public:
     void DUL_SendCFindRQ(int conn);
 
 private:
-    void DUL_GetCFindRQPDU();
-    void DUL_GetPresentationDataValueItem();
-    void DUL_GetPresentationDataValue(PresentationDataValue *presentationDataValue);
+    void DUL_GetCFindRQPDUMemory();
+    void DUL_GetPresentationDataValueItemMemory();
+    void DUL_GetPresentationDataValueMemory(PresentationDataValue *presentationDataValue);
     void DUL_GetBuffFromDcmElement(DcmElement *dcmelement);
     void DUL_GetBufferFromPoint(const unsigned char *data, int len);
     void DUL_GetBufferFromInt(int data, int len);
