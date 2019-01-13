@@ -21,6 +21,11 @@ static const string  ImplicitVRLittleEndian = "1.2.840.10008.1.2";
 static const string  ExplicitVRLittleEndian = "1.2.840.10008.1.2.1";
 static const string  ExplicitVRBigEndian = "1.2.840.10008.1.2.2";
 
+//PDV
+static const uint8_t PDVCommand = 0b00000001;
+static const uint8_t PDVCommandLastFragment = 0b00000011;
+static const uint8_t PDVDataSet = 0b00000000;
+static const uint8_t PDVDataSetLastFragment = 0b00000010;
 
 enum CFindRoot 
 {
@@ -44,4 +49,16 @@ static const uint16_t CCancelMoveRQ_CommandType = 0x0FFF;
 static const unsigned char ImplicitDataElementValueLength = 4;
 static const unsigned char EmplicitDataElementValueLength = 2;
 static const unsigned char EmplicitDataElementOBValueLength = 4;
+
+static const unsigned char ImplicitDataElementVRLength = 0;
+static const unsigned char EmplicitDataElementVRLength = 2;
+static const unsigned char EmplicitDataElementOBVRLength = 4;
+
+static const uint16_t Sucess_Status = 0x0000;
+static const uint16_t Pending_OK_Status = 0xFF00;
+static const uint16_t Pending_Warn_Status = 0xFF01;
+static const uint16_t Cancel_Status = 0xFE00;
+static const uint16_t OutofResource_Status = 0xA700;
+static const uint16_t IdentifierDoesNotMatchSOPClass_Status = 0xA900;
+static const uint16_t UnableToProcess_Status = 0xC000;
 #endif

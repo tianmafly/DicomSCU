@@ -29,7 +29,6 @@ private:
     void InitCFindeRQMessage(vector<DcmElement> querykeylist, CFindRoot cfindroot);
     void InitCFindeRQCommand(CFindRoot cfindroot);
     void InitCFindeRQDataSet(vector<DcmElement> querykeylist);
-    int GetDcmElementLen(DcmElement dcmelement);
     vector<DcmElement> TransferCommandToVector();
 private:
     CFindRQDIMSE *cFindRQDIMSE;

@@ -15,7 +15,7 @@ Identitor是从0x0008组开始,要按照协商的transfer来传输
 class ElementData
 {
 public:
-	int len;
+	uint32_t len;
 	unsigned char *data;
 };
 
@@ -28,24 +28,32 @@ public:
 	ElementData data;
 };
 
-class CDIMSE
+class DcmElementHandle
 {
-public:
-    CDIMSE(string transfersyntax);
-    
 public:
     void InitElementTag(DcmElement *dcmelement, uint16_t group, uint16_t element);
     void InitElementData(DcmElement *dcmelement, uint32_t len, const unsigned char * data);
     void InitElementData(DcmElement *dcmelement, uint32_t data);
     void InitElementData(DcmElement *dcmelement, uint16_t data);
     void InitElementData(DcmElement *dcmelement, uint8_t data);
+
+    int GetDcmElementLen(DcmElement dcmelement);
+
 private:
-    void InitElementData(DcmElement *dcmelement, uint32_t len, void *data);
+    // void InitElementData(DcmElement *dcmelement, uint32_t len, void *data);
+};
+
+class CDIMSE : public DcmElementHandle
+{
+public:
+    CDIMSE(string transfersyntax);
+
 public:
     DcmElement  groupLength;
     DcmElement  affectedSOPClassUID;
     DcmElement  commandField;
     DcmElement  commandDataSetType;
+
 private:
     string transfersyntax;
 };
@@ -59,7 +67,7 @@ public:
     DcmElement  priority;
 };
 
-struct CDIMSERSP : public CDIMSE
+class CDIMSERSP : public CDIMSE
 {
 public:
     CDIMSERSP(string transfersyntax);

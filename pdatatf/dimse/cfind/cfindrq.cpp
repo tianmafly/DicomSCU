@@ -59,14 +59,14 @@ void CFindRQ::InitCFindeRQCommand(CFindRoot cfindroot)
     cFindRQDIMSE->InitElementData(&(cFindRQDIMSE->priority), (uint16_t)0x0000);
     cFindRQDIMSE->InitElementData(&(cFindRQDIMSE->commandDataSetType), (uint16_t)0x1111);
 
-    uint16_t grouplen = GetDcmElementLen(cFindRQDIMSE->affectedSOPClassUID) + 
-                        GetDcmElementLen(cFindRQDIMSE->commandField) + 
-                        GetDcmElementLen(cFindRQDIMSE->messageID) + 
-                        GetDcmElementLen(cFindRQDIMSE->priority) + 
-                        GetDcmElementLen(cFindRQDIMSE->commandDataSetType);
+    uint16_t grouplen = cFindRQDIMSE->GetDcmElementLen(cFindRQDIMSE->affectedSOPClassUID) + 
+                        cFindRQDIMSE->GetDcmElementLen(cFindRQDIMSE->commandField) + 
+                        cFindRQDIMSE->GetDcmElementLen(cFindRQDIMSE->messageID) + 
+                        cFindRQDIMSE->GetDcmElementLen(cFindRQDIMSE->priority) + 
+                        cFindRQDIMSE->GetDcmElementLen(cFindRQDIMSE->commandDataSetType);
     cFindRQDIMSE->InitElementData(&(cFindRQDIMSE->groupLength), grouplen);
 
-    commandlen = GetDcmElementLen(cFindRQDIMSE->groupLength) + grouplen;
+    commandlen = cFindRQDIMSE->GetDcmElementLen(cFindRQDIMSE->groupLength) + grouplen;
 }
 
 void CFindRQ::InitCFindeRQDataSet(vector<DcmElement> querykeylist)
@@ -75,13 +75,8 @@ void CFindRQ::InitCFindeRQDataSet(vector<DcmElement> querykeylist)
 
     for (int i = 0; i < querykeylist.size(); i++)
     {
-        datasetlen += GetDcmElementLen(querykeylist[i]);
+        datasetlen += cFindRQDIMSE->GetDcmElementLen(querykeylist[i]);
     }
-}
-
-int CFindRQ::GetDcmElementLen(DcmElement dcmelement)
-{
-    return sizeof(dcmelement.tag) + dcmelement.vr.len + dcmelement.datalen.len + dcmelement.data.len;
 }
 
 vector<DcmElement> CFindRQ::TransferCommandToVector()

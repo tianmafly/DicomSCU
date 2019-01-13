@@ -3,28 +3,21 @@
 
 
 
-CDIMSE::CDIMSE(string transfersyntax) 
-{
-    this->transfersyntax = transfersyntax;
-    InitElementTag(&groupLength, 0x0000, 0x0000);
-    InitElementTag(&affectedSOPClassUID, 0x0000, 0x0002);
-    InitElementTag(&commandField, 0x0000, 0x0100);
-    InitElementTag(&commandDataSetType, 0x0000, 0x0800);
-}
-
-void CDIMSE::InitElementTag(DcmElement *dcmelement, uint16_t group, uint16_t element)
+void DcmElementHandle::InitElementTag(DcmElement *dcmelement, uint16_t group, uint16_t element)
 {
     memcpy(dcmelement->tag, &group, sizeof(group));
     memcpy(dcmelement->tag + sizeof(group), &element, sizeof(element));
-    dcmelement->vr.len = 0;
+    dcmelement->vr.len = ImplicitDataElementVRLength;
     dcmelement->vr.data = NULL;
 }
 
-void CDIMSE::InitElementData(DcmElement *dcmelement, uint32_t len, const unsigned char * data)
+void DcmElementHandle::InitElementData(DcmElement *dcmelement, uint32_t len, const unsigned char * data)
 {
     // implicit elementlen is 4 bytes
     dcmelement->datalen.len = ImplicitDataElementValueLength;
     dcmelement->datalen.data = new unsigned char[dcmelement->datalen.len];
+    if(len % 2 == 1)
+        len += 1;
     memcpy(dcmelement->datalen.data, &len, dcmelement->datalen.len);
     
     dcmelement->data.len = len;
@@ -32,30 +25,44 @@ void CDIMSE::InitElementData(DcmElement *dcmelement, uint32_t len, const unsigne
     memcpy(dcmelement->data.data, data, dcmelement->data.len);
 }
 
-void CDIMSE::InitElementData(DcmElement *dcmelement, uint32_t data)
+void DcmElementHandle::InitElementData(DcmElement *dcmelement, uint32_t data)
 {
-    InitElementData(dcmelement, sizeof(data), &data);
+    InitElementData(dcmelement, sizeof(data), (unsigned char *)&data);
 }
 
-void CDIMSE::InitElementData(DcmElement *dcmelement, uint16_t data)
+void DcmElementHandle::InitElementData(DcmElement *dcmelement, uint16_t data)
 {
-    InitElementData(dcmelement, sizeof(data), &data);
+    InitElementData(dcmelement, sizeof(data), (unsigned char *)&data);
 }
 
-void CDIMSE::InitElementData(DcmElement *dcmelement, uint8_t data)
+void DcmElementHandle::InitElementData(DcmElement *dcmelement, uint8_t data)
 {
-    InitElementData(dcmelement, sizeof(data), &data);
+    InitElementData(dcmelement, sizeof(data), (unsigned char *)&data);
 }
 
-void CDIMSE::InitElementData(DcmElement *dcmelement, uint32_t len, void *data)
+int DcmElementHandle::GetDcmElementLen(DcmElement dcmelement)
 {
-    dcmelement->datalen.len = ImplicitDataElementValueLength;
-    dcmelement->datalen.data = new unsigned char[dcmelement->datalen.len];
-    memcpy(dcmelement->datalen.data, &len, dcmelement->datalen.len);
+    return sizeof(dcmelement.tag) + dcmelement.vr.len + dcmelement.datalen.len + dcmelement.data.len;
+}
 
-    dcmelement->data.len = len;
-    dcmelement->data.data = new unsigned char[dcmelement->data.len];
-    memcpy(dcmelement->data.data, data, dcmelement->data.len);
+// void DcmElementHandle::InitElementData(DcmElement *dcmelement, uint32_t len, void *data)
+// {
+//     dcmelement->datalen.len = ImplicitDataElementValueLength;
+//     dcmelement->datalen.data = new unsigned char[dcmelement->datalen.len];
+//     memcpy(dcmelement->datalen.data, &len, dcmelement->datalen.len);
+
+//     dcmelement->data.len = len;
+//     dcmelement->data.data = new unsigned char[dcmelement->data.len];
+//     memcpy(dcmelement->data.data, data, dcmelement->data.len);
+// }
+
+CDIMSE::CDIMSE(string transfersyntax) 
+{
+    this->transfersyntax = transfersyntax;
+    InitElementTag(&groupLength, 0x0000, 0x0000);
+    InitElementTag(&affectedSOPClassUID, 0x0000, 0x0002);
+    InitElementTag(&commandField, 0x0000, 0x0100);
+    InitElementTag(&commandDataSetType, 0x0000, 0x0800);
 }
 
 CDIMSERQ::CDIMSERQ(string transfersyntax) : CDIMSE(transfersyntax)

@@ -5,6 +5,7 @@
 #include "../type/uid.h"
 #include "../pdatatf/dimse/dimse.h"
 #include "../pdu/pduassociaterq.h"
+#include "../pdatatf/dimse/cfind/cfindrsp.h"
 
 struct AssociatedSyntax
 {
@@ -32,23 +33,33 @@ int associate(string abstractsyntax, AssociateRQPDU_NameSpace::AssociateRQPDU *a
 void cfind(int conn, string transfersyntax, unsigned char presentationid)
 {
     vector<DcmElement> querykeylist;
-    DcmElement queryRetrieveLevel;
 
-    string value = "STUDY";
+    DcmElement queryRetrieveLevel;
+    string queryRetrieveLevelValue = "STUDY";
     CDIMSE cDIMSE(transfersyntax);
     cDIMSE.InitElementTag(&queryRetrieveLevel, 0x0008, 0x0052);
-    cDIMSE.InitElementData(&queryRetrieveLevel, value.size(), (unsigned char*)value.c_str());
+    cDIMSE.InitElementData(&queryRetrieveLevel, queryRetrieveLevelValue.size(), (unsigned char*)queryRetrieveLevelValue.c_str());
 
     DcmElement studyID;
-    string value1 = "123";
+    string studyIDValue = "3075905";
     cDIMSE.InitElementTag(&studyID, 0x0020, 0x0010);
-    cDIMSE.InitElementData(&studyID, value1.size(), (unsigned char*)value1.c_str());
+    cDIMSE.InitElementData(&studyID, studyIDValue.size(), (unsigned char*)studyIDValue.c_str());
+
+    DcmElement studyDate;
+    string studyDateValue = "";
+    cDIMSE.InitElementTag(&studyDate, 0x0008, 0x0020);
+    cDIMSE.InitElementData(&studyDate, studyDateValue.size(), (unsigned char*)studyDateValue.c_str());
 
     querykeylist.push_back(queryRetrieveLevel);
     querykeylist.push_back(studyID);
+    querykeylist.push_back(studyDate);
 
     CFindRQ cFindRQ(conn, transfersyntax, presentationid);
     cFindRQ.SendCFindRQPDU(querykeylist, CFindStudyRoot);
+
+    CFindRSP cFindRSP;
+    vector<CFindRSPResult> cFindRSPResultList = cFindRSP.ReceiveCFindRsp(conn, transfersyntax);
+    int a = 3;
 }
 
 vector<AssociatedSyntax> GetAssociatedSyntax( AssociateRQPDU_NameSpace::AssociateRQPDU *associaterqpdu, AssociateACPDU_NameSpace::AssociateACPDU *associateacpdu)
