@@ -1,20 +1,20 @@
-#ifndef DULCFINDRQ_H
-#define DULCFINDRQ_H
+#ifndef DULPDATATFRQ_H
+#define DULPDATATFRQ_H
 #include "../pdu/pdupdatatf.h"
 using namespace PDUPDataTF_namespace;
 
-class CFindeRQDUL
+class PDataTfRQDUL
 {
 private:
     
 public:
-    CFindeRQDUL(PDataTFPDU *pdatatf);
-    ~CFindeRQDUL();
+    PDataTfRQDUL(PDataTFPDU *pdatatf);
+    ~PDataTfRQDUL();
 public:
-    void DUL_SendCFindRQ(int conn);
+    void DUL_SendPDataTfPDU(int conn);
 
 private:
-    void DUL_GetCFindRQPDUMemory();
+    void DUL_GetPDataTfPDUMemory();
     void DUL_GetPresentationDataValueItemMemory();
     void DUL_GetPresentationDataValueMemory(PresentationDataValue *presentationDataValue);
     void DUL_GetBuffFromDcmElement(DcmElement *dcmelement);

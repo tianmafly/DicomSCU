@@ -1,25 +1,25 @@
-#include "dulcfindrq.h"
+#include "dulpdatatfrq.h"
 #include "../socket/socket.h"
 
 
 
-CFindeRQDUL::CFindeRQDUL(PDataTFPDU *pdatatf)
+PDataTfRQDUL::PDataTfRQDUL(PDataTFPDU *pdatatf)
 {
     index = 0;
     this->pdatatf = pdatatf;
     pdatatflen = pdatatf->headItem.pduLen + sizeof(pdatatf->headItem.pduLen) + sizeof(pdatatf->headItem.reserve) + sizeof(pdatatf->headItem.pduType);
     buffer = new unsigned char[pdatatflen];
 
-    DUL_GetCFindRQPDUMemory();
+    DUL_GetPDataTfPDUMemory();
 }
 
-CFindeRQDUL::~CFindeRQDUL()
+PDataTfRQDUL::~PDataTfRQDUL()
 {
     delete buffer;
     buffer = NULL;
 }
 
-void CFindeRQDUL::DUL_SendCFindRQ(int conn)
+void PDataTfRQDUL::DUL_SendPDataTfPDU(int conn)
 {
     TcpSocket tcpSocket;
     tcpSocket.Send(conn, buffer, pdatatflen);
@@ -29,7 +29,7 @@ void CFindeRQDUL::DUL_SendCFindRQ(int conn)
     }
 }
 
-void CFindeRQDUL::DUL_GetCFindRQPDUMemory()
+void PDataTfRQDUL::DUL_GetPDataTfPDUMemory()
 {
     DUL_GetBufferFromPoint(&(pdatatf->headItem.pduType), sizeof(pdatatf->headItem.pduType));
     DUL_GetBufferFromPoint(&(pdatatf->headItem.reserve), sizeof(pdatatf->headItem.reserve));
@@ -38,7 +38,7 @@ void CFindeRQDUL::DUL_GetCFindRQPDUMemory()
     DUL_GetPresentationDataValueItemMemory();
 }
 
-void CFindeRQDUL::DUL_GetPresentationDataValueItemMemory()
+void PDataTfRQDUL::DUL_GetPresentationDataValueItemMemory()
 {
     for(int i=0; i< pdatatf->presentationDataValueItemList.size(); i++)
     {
@@ -48,17 +48,17 @@ void CFindeRQDUL::DUL_GetPresentationDataValueItemMemory()
     }
 }
 
-void CFindeRQDUL::DUL_GetPresentationDataValueMemory(PresentationDataValue *presentationDataValue)
+void PDataTfRQDUL::DUL_GetPresentationDataValueMemory(PresentationDataValue *presentationDataValue)
 {
     DUL_GetBufferFromPoint(&(presentationDataValue->messageControlHeader), sizeof(presentationDataValue->messageControlHeader));
 
     for(int i=0; i<presentationDataValue->messageCommandOrDataSetFragment.size(); i++)
     {
-        DUL_GetBuffFromDcmElement(&(presentationDataValue->messageCommandOrDataSetFragment[i]));
+        DUL_GetBuffFromDcmElement(presentationDataValue->messageCommandOrDataSetFragment[i]);
     }
 }
 
-void CFindeRQDUL::DUL_GetBuffFromDcmElement(DcmElement *dcmelement)
+void PDataTfRQDUL::DUL_GetBuffFromDcmElement(DcmElement *dcmelement)
 {
     DUL_GetBufferFromPoint(dcmelement->tag, sizeof(dcmelement->tag));
     DUL_GetBufferFromPoint(dcmelement->vr.data, dcmelement->vr.len);
@@ -66,13 +66,13 @@ void CFindeRQDUL::DUL_GetBuffFromDcmElement(DcmElement *dcmelement)
     DUL_GetBufferFromPoint(dcmelement->data.data, dcmelement->data.len);
 }
 
-void CFindeRQDUL::DUL_GetBufferFromPoint(const unsigned char *data, int len)
+void PDataTfRQDUL::DUL_GetBufferFromPoint(const unsigned char *data, int len)
 {
     memcpy(buffer + index, data, len);
     index += len;
 }
 
-void  CFindeRQDUL::DUL_GetBufferFromInt(int data, int len)
+void  PDataTfRQDUL::DUL_GetBufferFromInt(int data, int len)
 {
     // 大端排列,scp服务端按照长度截取,直接转换为内存中的整形值.
     int pos = len - 1;

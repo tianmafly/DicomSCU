@@ -13,7 +13,7 @@ PDataTF::~PDataTF()
     pDataTFPDU = NULL;
 }
 
-PDataTFPDU *PDataTF::InitDefaultPDataTFPDU(vector<DcmElement> commandlist, int commandlen, vector<DcmElement> dataset, int datasetlen, unsigned char presentationid)
+PDataTFPDU *PDataTF::InitDefaultPDataTFPDU(vector<DcmElement*> commandlist, int commandlen, vector<DcmElement*> dataset, int datasetlen, unsigned char presentationid)
 {
     pDataTFPDU->headItem.pduType = 0x04;
     pDataTFPDU->headItem.reserve = 0x00;
@@ -48,7 +48,7 @@ PresentationDataValueItem PDataTF::InitPresentationDataValueItem(unsigned char p
     return presentationDataValueItem;
 }
 
-PDV PDataTF::InitCommandPresentationDataValue(vector<DcmElement> commandlist, int commandlen)
+PDV PDataTF::InitCommandPresentationDataValue(vector<DcmElement*> commandlist, int commandlen)
 {
     PDV pdv;
     PresentationDataValue presentationDataValue;
@@ -71,7 +71,7 @@ PDV PDataTF::InitCommandPresentationDataValue(vector<DcmElement> commandlist, in
     return pdv;
 }
 
-PDV PDataTF::InitDataSetPresentationDataValue(vector<DcmElement> dataset, int datasetlen)
+PDV PDataTF::InitDataSetPresentationDataValue(vector<DcmElement*> dataset, int datasetlen)
 {
     PDV pdv;
     PresentationDataValue presentationDataValue;

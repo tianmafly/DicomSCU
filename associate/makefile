@@ -1,5 +1,5 @@
 main: main.cpp associate.o
-	g++ -g main.cpp associate.o associaterq.o associateac.o ../dul/dulassociaterq.o ../dul/dulassociateac.o ../socket/socket.o ../pdatatf/dimse/dimse.o ../pdatatf/dimse/cfind/cfindrq.o ../pdatatf/dimse/cfind/cfindrsp.o ../pdatatf/pdatatf.o ../dul/dulcfindrq.o ../dul/dulcfindrsp.o -o main
+	g++ -g main.cpp associate.o associaterq.o associateac.o ../dul/dulassociaterq.o ../dul/dulassociateac.o ../socket/socket.o ../pdatatf/dimse/dimse.o ../pdatatf/dimse/dimserq.o ../pdatatf/dimse/cfind/cfindrq.o ../pdatatf/dimse/cfind/cfindrsp.o ../pdatatf/dimse/cmove/cmoverq.o ../pdatatf/pdatatf.o ../dul/dulpdatatfrq.o ../dul/dulcfindrsp.o -o main
 associate.o: associate.h associate.cpp associaterq.o associateac.o
 	g++ -g -c associate.cpp
 associaterq.o: associaterq.h associaterq.cpp 

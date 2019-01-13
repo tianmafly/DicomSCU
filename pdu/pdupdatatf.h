@@ -20,7 +20,7 @@ namespace PDUPDataTF_namespace
     struct PresentationDataValue
     {
         unsigned char messageControlHeader;
-        vector<DcmElement> messageCommandOrDataSetFragment;
+        vector<DcmElement*> messageCommandOrDataSetFragment;
     };
 
     // PDV

@@ -27,10 +27,10 @@ static const uint8_t PDVCommandLastFragment = 0b00000011;
 static const uint8_t PDVDataSet = 0b00000000;
 static const uint8_t PDVDataSetLastFragment = 0b00000010;
 
-enum CFindRoot 
+enum QueryRetrieveRoot 
 {
-    CFindPatientRoot = 1,
-    CFindStudyRoot = 2
+    PatientRoot = 1,
+    StudyRoot = 2
 };
 
 static const uint16_t CFindRQ_CommandType = 0x0020;

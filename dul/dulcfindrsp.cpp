@@ -110,35 +110,35 @@ void CFindRSPDUL::DUL_GetPresentationDataValue(PresentationDataValue *presentati
     DUL_GetmessageCommandOrDataSetFragment(&(presentationdatavalue->messageCommandOrDataSetFragment), presentationdatavaluelen - sizeof(presentationdatavalue->messageControlHeader));
 }
 
-void CFindRSPDUL::DUL_GetmessageCommandOrDataSetFragment(vector<DcmElement> *dcmelementlist, uint32_t dcmelementlistlen)
+void CFindRSPDUL::DUL_GetmessageCommandOrDataSetFragment(vector<DcmElement*> *dcmelementlist, uint32_t dcmelementlistlen)
 {
     // PDV's command is implicitlittel model
     isPDUProtocolHead = false;
     int dcmelementlen = 0;
     for(int i=0; i<dcmelementlistlen; i=dcmelementlen)
     {
-        DcmElement dcmelement = DUL_GetDcmElement();
+        DcmElement *dcmelement = DUL_GetDcmElement();
         dcmelementlist->push_back(dcmelement);
         dcmelementlen += DcmElementHandle().GetDcmElementLen(dcmelement);
     }
 }
 
-DcmElement CFindRSPDUL::DUL_GetDcmElement()
+DcmElement *CFindRSPDUL::DUL_GetDcmElement()
 {
-    DcmElement dcmelement;
-    DUL_GetPointFromBuffer(dcmelement.tag, sizeof(dcmelement.tag));
+    DcmElement *dcmelement = new DcmElement();
+    DUL_GetPointFromBuffer(dcmelement->tag, sizeof(dcmelement->tag));
 
-    dcmelement.vr.len = vrBytes;
-    dcmelement.vr.data = new unsigned char[dcmelement.vr.len];
-    DUL_GetPointFromBuffer(dcmelement.vr.data, dcmelement.vr.len);
+    dcmelement->vr.len = vrBytes;
+    dcmelement->vr.data = new unsigned char[dcmelement->vr.len];
+    DUL_GetPointFromBuffer(dcmelement->vr.data, dcmelement->vr.len);
 
-    dcmelement.datalen.len = LengthBytes;
-    dcmelement.datalen.data = new unsigned char[dcmelement.datalen.len];
-    DUL_GetPointFromBuffer(dcmelement.datalen.data, dcmelement.datalen.len);
+    dcmelement->datalen.len = LengthBytes;
+    dcmelement->datalen.data = new unsigned char[dcmelement->datalen.len];
+    DUL_GetPointFromBuffer(dcmelement->datalen.data, dcmelement->datalen.len);
 
-    memcpy(&(dcmelement.data.len), dcmelement.datalen.data, dcmelement.datalen.len);
-    dcmelement.data.data = new unsigned char[dcmelement.data.len];
-    DUL_GetPointFromBuffer(dcmelement.data.data, dcmelement.data.len);
+    memcpy(&(dcmelement->data.len), dcmelement->datalen.data, dcmelement->datalen.len);
+    dcmelement->data.data = new unsigned char[dcmelement->data.len];
+    DUL_GetPointFromBuffer(dcmelement->data.data, dcmelement->data.len);
 
     return dcmelement;
 }

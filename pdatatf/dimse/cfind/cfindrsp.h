@@ -10,19 +10,18 @@ using namespace PDUPDataTF_namespace;
 class CFindRSPDIMSE: public CDIMSERSP
 {
 public:
-    DcmElement affectedSOPInstanceUID;
+    DcmElement *affectedSOPInstanceUID;
 public:
     CFindRSPDIMSE(string transfersyntax);
 public:
-    vector<DcmElement> hasResultList;
-    vector<DcmElement> noResultList;
+    vector<DcmElement*> noResultList;
 };
 
 
 struct CFindRSPResult
 {
-    vector<DcmElement> commandElementList;
-    vector<DcmElement> dataSetElementList;
+    vector<DcmElement*> commandElementList;
+    vector<DcmElement*> dataSetElementList;
 };
 
 
@@ -42,8 +41,8 @@ private:
     bool IsReceiveAll();
     void Clear();
 private:
-    vector<DcmElement> commandElementList;
-    vector<DcmElement> dataSetElementList;
+    vector<DcmElement*> commandElementList;
+    vector<DcmElement*> dataSetElementList;
     bool isCommandLastFragment;
     bool isDataSetLastFragment;
 };

@@ -7,23 +7,15 @@ using namespace PDUPDataTF_namespace;
 
 CFindRSPDIMSE::CFindRSPDIMSE(string transfersyntax) : CDIMSERSP(transfersyntax)
 {
-    InitElementTag(&affectedSOPInstanceUID, 0x0000, 0x1000);
+    affectedSOPInstanceUID = new DcmElement();
+    InitElementTag(affectedSOPInstanceUID, 0x0000, 0x1000);
 
-    hasResultList.push_back(groupLength);
-    hasResultList.push_back(affectedSOPClassUID);
-    hasResultList.push_back(commandField);
-    hasResultList.push_back(messageIDBeingRespondedTo);
-    hasResultList.push_back(commandDataSetType);
-    hasResultList.push_back(affectedSOPInstanceUID);
-    hasResultList.push_back(status);
+    dcmElemenetList.push_back(affectedSOPInstanceUID);
+    dcmElemenetList.push_back(status);
 
-    noResultList.push_back(groupLength);
-    noResultList.push_back(affectedSOPClassUID);
-    noResultList.push_back(commandField);
-    noResultList.push_back(messageIDBeingRespondedTo);
-    noResultList.push_back(commandDataSetType);
-    noResultList.push_back(status);
-
+    noResultList  = dcmElemenetList;
+    // delete affectedSOPInstanceUID
+    noResultList.erase(noResultList.end() - 1 - 1);
 }
 
 CFindRSP::CFindRSP()
@@ -49,7 +41,7 @@ vector<CFindRSPResult> CFindRSP::ReceiveCFindRsp(int conn, string bytemodel)
         GetCFindResult(pDataTFPDU);
         if (!CheckCFindRsp())
             return cFindRspResultList;
-        memcpy(&status, (commandElementList.end() - 1)->data.data, sizeof(status));
+        memcpy(&status, (*(commandElementList.end() - 1))->data.data, sizeof(status));
         
         if(IsReceiveAll())
         {
@@ -71,7 +63,7 @@ void CFindRSP::GetCFindResult(PDataTFPDU * pDataTFPDU)
     {
         if((pDataTFPDU->presentationDataValueItemList[i].presentationDataValue.messageControlHeader & 0b00000001) == PDVCommand)
         {
-            vector<DcmElement> partCommandElementlist = pDataTFPDU->presentationDataValueItemList[i].presentationDataValue.messageCommandOrDataSetFragment;
+            vector<DcmElement*> partCommandElementlist = pDataTFPDU->presentationDataValueItemList[i].presentationDataValue.messageCommandOrDataSetFragment;
             commandElementList.insert(commandElementList.end(), partCommandElementlist.begin(), partCommandElementlist.end());
 
             if((pDataTFPDU->presentationDataValueItemList[i].presentationDataValue.messageControlHeader & 0b00000011) == PDVCommandLastFragment)
@@ -81,7 +73,7 @@ void CFindRSP::GetCFindResult(PDataTFPDU * pDataTFPDU)
         }
         else if((pDataTFPDU->presentationDataValueItemList[i].presentationDataValue.messageControlHeader & 0b00000001) == PDVDataSet)
         {
-            vector<DcmElement> partdataSetElementList = pDataTFPDU->presentationDataValueItemList[i].presentationDataValue.messageCommandOrDataSetFragment;
+            vector<DcmElement*> partdataSetElementList = pDataTFPDU->presentationDataValueItemList[i].presentationDataValue.messageCommandOrDataSetFragment;
             dataSetElementList.insert(dataSetElementList.end(), partdataSetElementList.begin(), partdataSetElementList.end());
 
             if((pDataTFPDU->presentationDataValueItemList[i].presentationDataValue.messageControlHeader & 0b00000011) == PDVDataSetLastFragment)
@@ -96,12 +88,12 @@ bool CFindRSP::CheckCFindRsp()
 {
     CFindRSPDIMSE cFindRSPDIMSE("");
 
-    vector<DcmElement> dcmElementlist;
+    vector<DcmElement*> dcmElementlist;
     if(isCommandLastFragment)
     {
-        if(commandElementList.size() == cFindRSPDIMSE.hasResultList.size())
+        if(commandElementList.size() == cFindRSPDIMSE.dcmElemenetList.size())
         {
-            dcmElementlist = cFindRSPDIMSE.hasResultList;
+            dcmElementlist = cFindRSPDIMSE.dcmElemenetList;
         }
         else if(commandElementList.size() == cFindRSPDIMSE.noResultList.size())
         {
@@ -114,7 +106,7 @@ bool CFindRSP::CheckCFindRsp()
 
         for(int i=0; i< commandElementList.size(); i++)
         {
-            if(memcmp(commandElementList[i].tag, dcmElementlist[i].tag, sizeof(commandElementList[i].tag)) != 0)
+            if(memcmp(commandElementList[i]->tag, dcmElementlist[i]->tag, sizeof(commandElementList[i]->tag)) != 0)
                 return false;
         }
     }
@@ -128,9 +120,9 @@ bool CFindRSP::IsReceiveAll()
     if(isCommandLastFragment)
     {
         uint16_t datasetflag = 0x0101;
-        DcmElement commandDataSetType = commandElementList[4];
+        DcmElement *commandDataSetType = commandElementList[4];
         // no result or last rsp. only with commond.
-        if(memcmp(commandDataSetType.data.data, &datasetflag, sizeof(datasetflag)) == 0)
+        if(memcmp(commandDataSetType->data.data, &datasetflag, sizeof(datasetflag)) == 0)
         {
             return true;
         }

@@ -6,6 +6,7 @@
 #include "../pdatatf/dimse/dimse.h"
 #include "../pdu/pduassociaterq.h"
 #include "../pdatatf/dimse/cfind/cfindrsp.h"
+#include "../pdatatf/dimse/cmove/cmoverq.h"
 
 struct AssociatedSyntax
 {
@@ -32,7 +33,7 @@ int associate(string abstractsyntax, AssociateRQPDU_NameSpace::AssociateRQPDU *a
 
 void cfind(int conn, string transfersyntax, unsigned char presentationid)
 {
-    vector<DcmElement> querykeylist;
+    vector<DcmElement*> querykeylist;
 
     DcmElement queryRetrieveLevel;
     string queryRetrieveLevelValue = "STUDY";
@@ -45,21 +46,45 @@ void cfind(int conn, string transfersyntax, unsigned char presentationid)
     cDIMSE.InitElementTag(&studyID, 0x0020, 0x0010);
     cDIMSE.InitElementData(&studyID, studyIDValue.size(), (unsigned char*)studyIDValue.c_str());
 
-    DcmElement studyDate;
-    string studyDateValue = "";
-    cDIMSE.InitElementTag(&studyDate, 0x0008, 0x0020);
-    cDIMSE.InitElementData(&studyDate, studyDateValue.size(), (unsigned char*)studyDateValue.c_str());
+    DcmElement studyInstanceUID;
+    string studyInstanceUIDValue = "";
+    cDIMSE.InitElementTag(&studyInstanceUID, 0x0020, 0x000D);
+    cDIMSE.InitElementData(&studyInstanceUID, studyInstanceUIDValue.size(), (unsigned char*)studyInstanceUIDValue.c_str());
 
-    querykeylist.push_back(queryRetrieveLevel);
-    querykeylist.push_back(studyID);
-    querykeylist.push_back(studyDate);
+    querykeylist.push_back(&queryRetrieveLevel);
+    querykeylist.push_back(&studyID);
+    querykeylist.push_back(&studyInstanceUID);
 
     CFindRQ cFindRQ(conn, transfersyntax, presentationid);
-    cFindRQ.SendCFindRQPDU(querykeylist, CFindStudyRoot);
+    cFindRQ.DIMSE_SendPDataTfPDU(querykeylist, StudyRoot);
 
     CFindRSP cFindRSP;
     vector<CFindRSPResult> cFindRSPResultList = cFindRSP.ReceiveCFindRsp(conn, transfersyntax);
     int a = 3;
+}
+
+void cmove(int conn, string transfersyntax, unsigned char presentationid, string studyinstanceuid)
+{
+    vector<DcmElement*> querykeylist;
+
+    DcmElement queryRetrieveLevel;
+    string queryRetrieveLevelValue = "STUDY";
+    CDIMSE cDIMSE(transfersyntax);
+    cDIMSE.InitElementTag(&queryRetrieveLevel, 0x0008, 0x0052);
+    cDIMSE.InitElementData(&queryRetrieveLevel, queryRetrieveLevelValue.size(), (unsigned char*)queryRetrieveLevelValue.c_str());
+
+    DcmElement studyInstanceUID;
+    string studyInstanceUIDValue = studyinstanceuid;
+    cDIMSE.InitElementTag(&studyInstanceUID, 0x0020, 0x000D);
+    cDIMSE.InitElementData(&studyInstanceUID, studyInstanceUIDValue.size(), (unsigned char*)studyInstanceUIDValue.c_str());
+
+    querykeylist.push_back(&queryRetrieveLevel);
+    querykeylist.push_back(&studyInstanceUID);
+
+    string AE = "TEST_AEM";
+    CMoveRQ cMoveRQ(conn, transfersyntax, presentationid, AE);
+    cMoveRQ.DIMSE_SendPDataTfPDU(querykeylist, StudyRoot);
+
 }
 
 vector<AssociatedSyntax> GetAssociatedSyntax( AssociateRQPDU_NameSpace::AssociateRQPDU *associaterqpdu, AssociateACPDU_NameSpace::AssociateACPDU *associateacpdu)
@@ -87,7 +112,7 @@ vector<AssociatedSyntax> GetAssociatedSyntax( AssociateRQPDU_NameSpace::Associat
     return associatedsyntaxlist;
 }
 
-int main()
+void CFindOperate()
 {
     string AbstractSyntax = StudyRoot_QueryRetrieveInformationModel_FIND;
     AssociateRQPDU_NameSpace::AssociateRQPDU *associateRQPDU = new AssociateRQPDU_NameSpace::AssociateRQPDU();
@@ -105,7 +130,33 @@ int main()
         }
             
     }
-    
+}
+
+void CMoveOperate()
+{
+    string AbstractSyntax = StudyRoot_QueryRetrieveInformationModel_MOVE;
+    AssociateRQPDU_NameSpace::AssociateRQPDU *associateRQPDU = new AssociateRQPDU_NameSpace::AssociateRQPDU();
+    AssociateACPDU_NameSpace::AssociateACPDU *associateACPDU = new AssociateACPDU_NameSpace::AssociateACPDU();
+
+    int conn = associate(AbstractSyntax, associateRQPDU, associateACPDU);
+
+    vector<AssociatedSyntax> associatedsyntaxlist = GetAssociatedSyntax(associateRQPDU, associateACPDU);
+    for(int i=0; i<associatedsyntaxlist.size(); i++)
+    {
+        if(associatedsyntaxlist[i].AbstractSyntax == AbstractSyntax)
+        {
+            string StudyInstanceUID = "1.2.840.113619.186.80861568102.20180319190234143.549";
+            cmove(conn, associatedsyntaxlist[i].TransferSyntax, associatedsyntaxlist[i].PresentationID, StudyInstanceUID);
+            break;
+        }
+            
+    }
+}
+
+int main()
+{
+    // CFindOperate();
+    CMoveOperate();
     
     int x = 312;
 }

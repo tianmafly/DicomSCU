@@ -40,9 +40,9 @@ void DcmElementHandle::InitElementData(DcmElement *dcmelement, uint8_t data)
     InitElementData(dcmelement, sizeof(data), (unsigned char *)&data);
 }
 
-int DcmElementHandle::GetDcmElementLen(DcmElement dcmelement)
+int DcmElementHandle::GetDcmElementLen(DcmElement *dcmelement)
 {
-    return sizeof(dcmelement.tag) + dcmelement.vr.len + dcmelement.datalen.len + dcmelement.data.len;
+    return sizeof(dcmelement->tag) + dcmelement->vr.len + dcmelement->datalen.len + dcmelement->data.len;
 }
 
 // void DcmElementHandle::InitElementData(DcmElement *dcmelement, uint32_t len, void *data)
@@ -59,20 +59,44 @@ int DcmElementHandle::GetDcmElementLen(DcmElement dcmelement)
 CDIMSE::CDIMSE(string transfersyntax) 
 {
     this->transfersyntax = transfersyntax;
-    InitElementTag(&groupLength, 0x0000, 0x0000);
-    InitElementTag(&affectedSOPClassUID, 0x0000, 0x0002);
-    InitElementTag(&commandField, 0x0000, 0x0100);
-    InitElementTag(&commandDataSetType, 0x0000, 0x0800);
+
+    groupLength = new DcmElement();
+    affectedSOPClassUID = new DcmElement();
+    commandField = new DcmElement();
+    commandDataSetType = new DcmElement();
+
+    InitElementTag(groupLength, 0x0000, 0x0000);
+    InitElementTag(affectedSOPClassUID, 0x0000, 0x0002);
+    InitElementTag(commandField, 0x0000, 0x0100);
+    InitElementTag(commandDataSetType, 0x0000, 0x0800);
 }
 
 CDIMSERQ::CDIMSERQ(string transfersyntax) : CDIMSE(transfersyntax)
 {
-    InitElementTag(&messageID, 0x0000, 0x0110);
-    InitElementTag(&priority, 0x0000, 0x0700);
+    messageID = new DcmElement();
+    priority = new DcmElement();
+    InitElementTag(messageID, 0x0000, 0x0110);
+    InitElementTag(priority, 0x0000, 0x0700);
+
+    dcmElemenetList.push_back(groupLength);
+    dcmElemenetList.push_back(affectedSOPClassUID);
+    dcmElemenetList.push_back(commandField);
+    dcmElemenetList.push_back(messageID);
+    dcmElemenetList.push_back(priority);
+    dcmElemenetList.push_back(commandDataSetType);
 }
 
 CDIMSERSP::CDIMSERSP(string transfersyntax) : CDIMSE(transfersyntax)
 {
-    InitElementTag(&messageIDBeingRespondedTo, 0x0000, 0x0120);
-    InitElementTag(&status, 0x0000, 0x0900);
+    messageIDBeingRespondedTo = new DcmElement();
+    status = new DcmElement();
+
+    InitElementTag(messageIDBeingRespondedTo, 0x0000, 0x0120);
+    InitElementTag(status, 0x0000, 0x0900);
+
+    dcmElemenetList.push_back(groupLength);
+    dcmElemenetList.push_back(affectedSOPClassUID);
+    dcmElemenetList.push_back(commandField);
+    dcmElemenetList.push_back(messageIDBeingRespondedTo);
+    dcmElemenetList.push_back(commandDataSetType);
 }
