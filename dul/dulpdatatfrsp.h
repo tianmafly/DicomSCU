@@ -7,15 +7,15 @@
 
 using namespace PDUPDataTF_namespace;
 
-class CFindRSPDUL
+class PDataTfRSPDUL
 {
 private:
     /* data */
 public:
-    CFindRSPDUL(int conn, string transfersyntax);
-    ~CFindRSPDUL();
+    PDataTfRSPDUL(int conn, string transfersyntax);
+    ~PDataTfRSPDUL();
 public:
-    PDataTFPDU * DUL_ReceiveCFindRSP();
+    PDataTFPDU * DUL_ReceivePDataTfRSP();
 private:
     void DUL_GetPDataTFHead(HeadItem *headitem);
     void DUL_GetPDataTFBody(vector<PresentationDataValueItem> *presentationdatavalueitemlist, uint32_t itemlistlen);

@@ -14,13 +14,6 @@ public:
     DcmElement *moveDestination;
 };
 
-struct CMoveRSPDIMSE : public CDIMSERSP
-{
-    DcmElement numberofRemainingSubOperations;
-    DcmElement numberofCompleteSubOperations;
-    DcmElement numberofFailedSubOperations;
-    DcmElement numberofWarningSubOperations;
-};
 
 
 class CMoveRQ : public DIMSERQ

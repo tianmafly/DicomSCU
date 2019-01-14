@@ -7,6 +7,7 @@
 #include "../pdu/pduassociaterq.h"
 #include "../pdatatf/dimse/cfind/cfindrsp.h"
 #include "../pdatatf/dimse/cmove/cmoverq.h"
+#include "../pdatatf/dimse/cmove/cmoversp.h"
 
 struct AssociatedSyntax
 {
@@ -58,8 +59,8 @@ void cfind(int conn, string transfersyntax, unsigned char presentationid)
     CFindRQ cFindRQ(conn, transfersyntax, presentationid);
     cFindRQ.DIMSE_SendPDataTfPDU(querykeylist, StudyRoot);
 
-    CFindRSP cFindRSP;
-    vector<CFindRSPResult> cFindRSPResultList = cFindRSP.ReceiveCFindRsp(conn, transfersyntax);
+    CFindRSP cFindRSP(conn, transfersyntax);
+    vector<DIMSERSPResult> dimseRSPResultList = cFindRSP.ReceivePDataTfRsp();
     int a = 3;
 }
 
@@ -85,6 +86,9 @@ void cmove(int conn, string transfersyntax, unsigned char presentationid, string
     CMoveRQ cMoveRQ(conn, transfersyntax, presentationid, AE);
     cMoveRQ.DIMSE_SendPDataTfPDU(querykeylist, StudyRoot);
 
+    CMoveRSP cMoveRSP(conn, transfersyntax);
+    vector<DIMSERSPResult> dimseRSPResultList = cMoveRSP.ReceivePDataTfRsp();
+    int a = 312;
 }
 
 vector<AssociatedSyntax> GetAssociatedSyntax( AssociateRQPDU_NameSpace::AssociateRQPDU *associaterqpdu, AssociateACPDU_NameSpace::AssociateACPDU *associateacpdu)

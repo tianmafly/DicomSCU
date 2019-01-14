@@ -1,6 +1,5 @@
 #include "cfindrsp.h"
-#include "../../../dul/dulcfindrsp.h"
-
+#include "../../../dul/dulpdatatfrsp.h"
 #include "../../../type/uid.h"
 
 using namespace PDUPDataTF_namespace;
@@ -10,112 +9,33 @@ CFindRSPDIMSE::CFindRSPDIMSE(string transfersyntax) : CDIMSERSP(transfersyntax)
     affectedSOPInstanceUID = new DcmElement();
     InitElementTag(affectedSOPInstanceUID, 0x0000, 0x1000);
 
-    dcmElemenetList.push_back(affectedSOPInstanceUID);
-    dcmElemenetList.push_back(status);
-
+    // affectedSOPInstanceUID is befor of status
+    dcmElemenetList.insert((dcmElemenetList.end() -1), affectedSOPInstanceUID);
+    
     noResultList  = dcmElemenetList;
     // delete affectedSOPInstanceUID
     noResultList.erase(noResultList.end() - 1 - 1);
 }
 
-CFindRSP::CFindRSP()
+CFindRSP::CFindRSP(int conn, string transfersyntax) : DIMSERSP(conn, transfersyntax)
 {
     isCommandLastFragment = false;
     isDataSetLastFragment= false;
+    cDIMSERSP = new CFindRSPDIMSE(transfersyntax);
 }
 
 CFindRSP::~CFindRSP()
 {
-
+    delete cDIMSERSP;
+    cDIMSERSP = NULL;
 }
 
-vector<CFindRSPResult> CFindRSP::ReceiveCFindRsp(int conn, string bytemodel)
+void CFindRSP::GetStatus(uint16_t *status)
 {
-    uint16_t status = Pending_OK_Status;
-    CFindRSPDUL cFindRSPDUL(conn, bytemodel);
-    vector<CFindRSPResult> cFindRspResultList;
-    while(status == Pending_OK_Status)
-    {
-        
-        PDataTFPDU * pDataTFPDU = cFindRSPDUL.DUL_ReceiveCFindRSP();
-        GetCFindResult(pDataTFPDU);
-        if (!CheckCFindRsp())
-            return cFindRspResultList;
-        memcpy(&status, (*(commandElementList.end() - 1))->data.data, sizeof(status));
-        
-        if(IsReceiveAll())
-        {
-            CFindRSPResult cFindRSPResult;
-            cFindRSPResult.commandElementList = commandElementList;
-            cFindRSPResult.dataSetElementList = dataSetElementList;
-            cFindRspResultList.push_back(cFindRSPResult);
-
-            Clear();
-        }
-    }
-    
-    return cFindRspResultList;
+    memcpy(status, (*(commandElementList.end() - 1))->data.data, sizeof(status));
 }
 
-void CFindRSP::GetCFindResult(PDataTFPDU * pDataTFPDU)
-{   
-    for(int i=0; i<pDataTFPDU->presentationDataValueItemList.size(); i++)
-    {
-        if((pDataTFPDU->presentationDataValueItemList[i].presentationDataValue.messageControlHeader & 0b00000001) == PDVCommand)
-        {
-            vector<DcmElement*> partCommandElementlist = pDataTFPDU->presentationDataValueItemList[i].presentationDataValue.messageCommandOrDataSetFragment;
-            commandElementList.insert(commandElementList.end(), partCommandElementlist.begin(), partCommandElementlist.end());
-
-            if((pDataTFPDU->presentationDataValueItemList[i].presentationDataValue.messageControlHeader & 0b00000011) == PDVCommandLastFragment)
-            {
-                isCommandLastFragment = true;
-            }
-        }
-        else if((pDataTFPDU->presentationDataValueItemList[i].presentationDataValue.messageControlHeader & 0b00000001) == PDVDataSet)
-        {
-            vector<DcmElement*> partdataSetElementList = pDataTFPDU->presentationDataValueItemList[i].presentationDataValue.messageCommandOrDataSetFragment;
-            dataSetElementList.insert(dataSetElementList.end(), partdataSetElementList.begin(), partdataSetElementList.end());
-
-            if((pDataTFPDU->presentationDataValueItemList[i].presentationDataValue.messageControlHeader & 0b00000011) == PDVDataSetLastFragment)
-            {
-                isDataSetLastFragment = true;
-            }
-        }  
-    }
-}
-
-bool CFindRSP::CheckCFindRsp()
-{
-    CFindRSPDIMSE cFindRSPDIMSE("");
-
-    vector<DcmElement*> dcmElementlist;
-    if(isCommandLastFragment)
-    {
-        if(commandElementList.size() == cFindRSPDIMSE.dcmElemenetList.size())
-        {
-            dcmElementlist = cFindRSPDIMSE.dcmElemenetList;
-        }
-        else if(commandElementList.size() == cFindRSPDIMSE.noResultList.size())
-        {
-            dcmElementlist = cFindRSPDIMSE.noResultList;   
-        }
-        else
-        {
-            return false;
-        }
-
-        for(int i=0; i< commandElementList.size(); i++)
-        {
-            if(memcmp(commandElementList[i]->tag, dcmElementlist[i]->tag, sizeof(commandElementList[i]->tag)) != 0)
-                return false;
-        }
-    }
-    
-    return true;
-    
-}
-
-bool CFindRSP::IsReceiveAll()
+bool CFindRSP::IsReceiveOneFullResult()
 {
     if(isCommandLastFragment)
     {
@@ -137,10 +57,4 @@ bool CFindRSP::IsReceiveAll()
     }
 
     return false;
-}
-
-void CFindRSP::Clear()
-{
-    commandElementList.clear();
-    dataSetElementList.clear();
 }

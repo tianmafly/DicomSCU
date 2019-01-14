@@ -89,9 +89,8 @@ CDIMSERQ::CDIMSERQ(string transfersyntax) : CDIMSE(transfersyntax)
 CDIMSERSP::CDIMSERSP(string transfersyntax) : CDIMSE(transfersyntax)
 {
     messageIDBeingRespondedTo = new DcmElement();
-    status = new DcmElement();
-
     InitElementTag(messageIDBeingRespondedTo, 0x0000, 0x0120);
+    status = new DcmElement();
     InitElementTag(status, 0x0000, 0x0900);
 
     dcmElemenetList.push_back(groupLength);
@@ -99,4 +98,5 @@ CDIMSERSP::CDIMSERSP(string transfersyntax) : CDIMSE(transfersyntax)
     dcmElemenetList.push_back(commandField);
     dcmElemenetList.push_back(messageIDBeingRespondedTo);
     dcmElemenetList.push_back(commandDataSetType);
+    dcmElemenetList.push_back(status);
 }

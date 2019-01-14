@@ -1,10 +1,10 @@
-#include "dulcfindrsp.h"
+#include "dulpdatatfrsp.h"
 #include "../type/uid.h"
 #include <stdio.h>
 #include <unistd.h>
 
 
-CFindRSPDUL::CFindRSPDUL(int conn, string transfersyntax)
+PDataTfRSPDUL::PDataTfRSPDUL(int conn, string transfersyntax)
 {
     tcpSocket = new TcpSocket();
     this->conn = conn;
@@ -15,13 +15,13 @@ CFindRSPDUL::CFindRSPDUL(int conn, string transfersyntax)
     Init();
 }
 
-CFindRSPDUL::~CFindRSPDUL()
+PDataTfRSPDUL::~PDataTfRSPDUL()
 {
     delete tcpSocket;
     tcpSocket = NULL;
 }
 
-void CFindRSPDUL::Init()
+void PDataTfRSPDUL::Init()
 {
     // PDUProtocolHead is big model
     isPDUProtocolHead = true;
@@ -29,7 +29,7 @@ void CFindRSPDUL::Init()
     pdubody = NULL;
 }
 
-void CFindRSPDUL::InitDcmElementModel(string transfersyntax)
+void PDataTfRSPDUL::InitDcmElementModel(string transfersyntax)
 {
     if(transfersyntax == ImplicitVRLittleEndian)
     {
@@ -48,7 +48,7 @@ void CFindRSPDUL::InitDcmElementModel(string transfersyntax)
     }
 }
 
-PDataTFPDU * CFindRSPDUL::DUL_ReceiveCFindRSP()
+PDataTFPDU * PDataTfRSPDUL::DUL_ReceivePDataTfRSP()
 {
     Init();
     PDataTFPDU *pDataTFPDU = new PDataTFPDU();
@@ -58,7 +58,7 @@ PDataTFPDU * CFindRSPDUL::DUL_ReceiveCFindRSP()
     return pDataTFPDU;
 }
 
-void CFindRSPDUL::DUL_GetPDataTFHead(HeadItem *headitem)
+void PDataTfRSPDUL::DUL_GetPDataTFHead(HeadItem *headitem)
 {
     isPDUProtocolHead = true;
     unsigned char pduhead[6];
@@ -81,7 +81,7 @@ void CFindRSPDUL::DUL_GetPDataTFHead(HeadItem *headitem)
     }
 }
 
-void CFindRSPDUL::DUL_GetPDataTFBody(vector<PresentationDataValueItem> *presentationdatavalueitemlist, uint32_t itemlistlen)
+void PDataTfRSPDUL::DUL_GetPDataTFBody(vector<PresentationDataValueItem> *presentationdatavalueitemlist, uint32_t itemlistlen)
 {
     uint32_t itemlen = 0;
     for(int i=0; i< itemlistlen; i=itemlen)
@@ -93,7 +93,7 @@ void CFindRSPDUL::DUL_GetPDataTFBody(vector<PresentationDataValueItem> *presenta
     }
 }
 
-uint32_t CFindRSPDUL::DUL_GetPresentationDataValueItem(PresentationDataValueItem *presentationdatavalueitem)
+uint32_t PDataTfRSPDUL::DUL_GetPresentationDataValueItem(PresentationDataValueItem *presentationdatavalueitem)
 {
     DUL_GetIntFromBuffer(&(presentationdatavalueitem->itemLen), sizeof(presentationdatavalueitem->itemLen));
     DUL_GetPointFromBuffer(&(presentationdatavalueitem->presentationID), sizeof(presentationdatavalueitem->presentationID));
@@ -103,14 +103,14 @@ uint32_t CFindRSPDUL::DUL_GetPresentationDataValueItem(PresentationDataValueItem
     return presentationdatavalueitem->itemLen + sizeof(presentationdatavalueitem->itemLen);
 }
 
-void CFindRSPDUL::DUL_GetPresentationDataValue(PresentationDataValue *presentationdatavalue, uint32_t presentationdatavaluelen)
+void PDataTfRSPDUL::DUL_GetPresentationDataValue(PresentationDataValue *presentationdatavalue, uint32_t presentationdatavaluelen)
 {
     DUL_GetPointFromBuffer(&(presentationdatavalue->messageControlHeader), sizeof(presentationdatavalue->messageControlHeader));
 
     DUL_GetmessageCommandOrDataSetFragment(&(presentationdatavalue->messageCommandOrDataSetFragment), presentationdatavaluelen - sizeof(presentationdatavalue->messageControlHeader));
 }
 
-void CFindRSPDUL::DUL_GetmessageCommandOrDataSetFragment(vector<DcmElement*> *dcmelementlist, uint32_t dcmelementlistlen)
+void PDataTfRSPDUL::DUL_GetmessageCommandOrDataSetFragment(vector<DcmElement*> *dcmelementlist, uint32_t dcmelementlistlen)
 {
     // PDV's command is implicitlittel model
     isPDUProtocolHead = false;
@@ -123,7 +123,7 @@ void CFindRSPDUL::DUL_GetmessageCommandOrDataSetFragment(vector<DcmElement*> *dc
     }
 }
 
-DcmElement *CFindRSPDUL::DUL_GetDcmElement()
+DcmElement *PDataTfRSPDUL::DUL_GetDcmElement()
 {
     DcmElement *dcmelement = new DcmElement();
     DUL_GetPointFromBuffer(dcmelement->tag, sizeof(dcmelement->tag));
@@ -143,7 +143,7 @@ DcmElement *CFindRSPDUL::DUL_GetDcmElement()
     return dcmelement;
 }
 
-void CFindRSPDUL::DUL_GetPointFromBuffer(unsigned char *data, int len)
+void PDataTfRSPDUL::DUL_GetPointFromBuffer(unsigned char *data, int len)
 {
     if(len == 0)
         return;
@@ -157,7 +157,7 @@ void CFindRSPDUL::DUL_GetPointFromBuffer(unsigned char *data, int len)
     index += len;
 }
 
-void CFindRSPDUL::DUL_GetIntFromBuffer(uint16_t *data, int len)
+void PDataTfRSPDUL::DUL_GetIntFromBuffer(uint16_t *data, int len)
 {
     *data = 0;
     DUL_GetPointFromBuffer((unsigned char *)data, len);
@@ -168,7 +168,7 @@ void CFindRSPDUL::DUL_GetIntFromBuffer(uint16_t *data, int len)
     // }
 }
 
-void CFindRSPDUL::DUL_GetIntFromBuffer(uint32_t *data, int len)
+void PDataTfRSPDUL::DUL_GetIntFromBuffer(uint32_t *data, int len)
 {
     *data = 0;
     DUL_GetPointFromBuffer((unsigned char *)data, len);
@@ -179,7 +179,7 @@ void CFindRSPDUL::DUL_GetIntFromBuffer(uint32_t *data, int len)
     // }
 }
 
-void CFindRSPDUL::DUL_BigToLittel(unsigned char * bufferbig, int bufferlen)
+void PDataTfRSPDUL::DUL_BigToLittel(unsigned char * bufferbig, int bufferlen)
 {
     unsigned char bufferlittel[bufferlen];
     for(int i=0; i< bufferlen; i++)

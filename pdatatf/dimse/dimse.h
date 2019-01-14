@@ -2,7 +2,7 @@
 #define DIMSE_H
 
 #include <string.h>
-#include<stdio.h>
+#include <stdio.h>
 #include <stdint.h>
 #include <string>
 #include <vector>
@@ -77,6 +77,8 @@ public:
 public:
     DcmElement *messageIDBeingRespondedTo;
     DcmElement *status;
+public:
+    vector<DcmElement*> noResultList;
 };
 
 
