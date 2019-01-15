@@ -19,6 +19,9 @@ CMoveRSPDIMSE::CMoveRSPDIMSE(string transfersyntax) : CDIMSERSP(transfersyntax)
     dcmElemenetList.push_back(numberofFailedSubOperations);
     dcmElemenetList.push_back(numberofWarningSubOperations);
 
+    lastSummaryRsp = dcmElemenetList;
+    // dcmtk cmoversp lastsummaryrsp has no numberofRemainingSubOperations
+    lastSummaryRsp.erase(lastSummaryRsp.end() - 1 - 3);
 }
 
 CMoveRSPDIMSE::~CMoveRSPDIMSE()
@@ -40,31 +43,17 @@ CMoveRSP::~CMoveRSP()
     cDIMSERSP = NULL;
 }
 
+bool CMoveRSP::CheckPDataTfRsp(vector<DcmElement *> commandelementlist)
+{
+    if(!DIMSERSP::CheckPDataTfRsp(commandelementlist))
+    {
+       return DIMSERSP::CheckPDataTfRsp(((CMoveRSPDIMSE *)cDIMSERSP)->lastSummaryRsp);
+    }
+    
+    return true;
+}
+
 void CMoveRSP::GetStatus(uint16_t *status)
 {
     memcpy(status, (*(commandElementList.end() - 1 - 4))->data.data, sizeof(status));
-}
-
-bool CMoveRSP::IsReceiveOneFullResult()
-{
-    if(isCommandLastFragment)
-    {
-        uint16_t datasetflag = 0x0101;
-        DcmElement *commandDataSetType = commandElementList[4];
-        // no result or last rsp. only with commond.
-        if(memcmp(commandDataSetType->data.data, &datasetflag, sizeof(datasetflag)) == 0)
-        {
-            return true;
-        }
-        else
-        {
-            if(isCommandLastFragment == true && isDataSetLastFragment == true)
-            {
-                
-                return true;
-            }
-        }
-    }
-
-    return false;
 }

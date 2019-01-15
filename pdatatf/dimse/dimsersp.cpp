@@ -30,7 +30,7 @@ vector<DIMSERSPResult> DIMSERSP::ReceivePDataTfRsp()
         
         PDataTFPDU * pDataTFPDU = pDataTfRSPDUL->DUL_ReceivePDataTfRSP();
         GetPDataTfResult(pDataTFPDU);
-        if (!CheckPDataTfRsp())
+        if (!CheckPDataTfRsp(cDIMSERSP->dcmElemenetList))
             return cFindRspResultList;
         GetStatus(&status);
         
@@ -75,33 +75,18 @@ void DIMSERSP::GetPDataTfResult(PDataTFPDU * pDataTFPDU)
     }
 }
 
-bool DIMSERSP::CheckPDataTfRsp()
+bool DIMSERSP::CheckPDataTfRsp(vector<DcmElement *> commandelementlist)
 {
-    vector<DcmElement*> dcmElementlist;
     if(isCommandLastFragment)
     {
-        if(commandElementList.size() == cDIMSERSP->dcmElemenetList.size())
-        {
-            dcmElementlist = cDIMSERSP->dcmElemenetList;
-        }
-        else if(commandElementList.size() == cDIMSERSP->noResultList.size())
-        {
-            dcmElementlist = cDIMSERSP->noResultList;   
-        }
-        else
-        {
-            return false;
-        }
-
         for(int i=0; i< commandElementList.size(); i++)
         {
-            if(memcmp(commandElementList[i]->tag, dcmElementlist[i]->tag, sizeof(commandElementList[i]->tag)) != 0)
+            if(memcmp(commandElementList[i]->tag, commandelementlist[i]->tag, sizeof(commandElementList[i]->tag)) != 0)
                 return false;
         }
     }
     
     return true;
-    
 }
 
 bool DIMSERSP::IsReceiveOneFullResult()
@@ -112,16 +97,11 @@ bool DIMSERSP::IsReceiveOneFullResult()
         DcmElement *commandDataSetType = commandElementList[4];
         // no result or last rsp. only with commond.
         if(memcmp(commandDataSetType->data.data, &datasetflag, sizeof(datasetflag)) == 0)
-        {
             return true;
-        }
         else
         {
             if(isCommandLastFragment == true && isDataSetLastFragment == true)
-            {
-                
                 return true;
-            }
         }
     }
 

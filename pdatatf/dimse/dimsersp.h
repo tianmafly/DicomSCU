@@ -26,14 +26,14 @@ public:
 protected:
     virtual void GetStatus(uint16_t *status) = 0;
     void GetPDataTfResult(PDataTFPDU * pDataTFPDU);
-    bool CheckPDataTfRsp();
-    virtual bool IsReceiveOneFullResult();
+    virtual bool CheckPDataTfRsp(vector<DcmElement *> commandelementlist);
+    bool IsReceiveOneFullResult();
     void Clear();
 protected:
     vector<DcmElement*> commandElementList;
     vector<DcmElement*> dataSetElementList;
     bool isCommandLastFragment;
-    bool isDataSetLastFragment;
+    bool isDataSetLastFragment;;
     CDIMSERSP *cDIMSERSP;
     PDataTfRSPDUL *pDataTfRSPDUL;
 };

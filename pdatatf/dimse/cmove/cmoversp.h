@@ -13,6 +13,8 @@ public:
     DcmElement *numberofCompleteSubOperations;
     DcmElement *numberofFailedSubOperations;
     DcmElement *numberofWarningSubOperations;
+public:
+    vector<DcmElement *> lastSummaryRsp;
 };
 
 
@@ -23,7 +25,7 @@ public:
     ~CMoveRSP();
 protected:
     virtual void GetStatus(uint16_t *status);
-    virtual bool IsReceiveOneFullResult();
+    virtual bool CheckPDataTfRsp(vector<DcmElement *> commandelementlist);
 };
 
 #endif // !CMOVERSP_H

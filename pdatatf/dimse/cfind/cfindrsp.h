@@ -11,8 +11,6 @@ using namespace PDUPDataTF_namespace;
 class CFindRSPDIMSE: public CDIMSERSP
 {
 public:
-    DcmElement *affectedSOPInstanceUID;
-public:
     CFindRSPDIMSE(string transfersyntax);
 };
 
@@ -24,7 +22,6 @@ public:
     ~CFindRSP();
 public:
     virtual void GetStatus(uint16_t *status);
-    virtual bool IsReceiveOneFullResult();
 };
 
 

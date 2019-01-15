@@ -77,8 +77,6 @@ public:
 public:
     DcmElement *messageIDBeingRespondedTo;
     DcmElement *status;
-public:
-    vector<DcmElement*> noResultList;
 };
 
 
